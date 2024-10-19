@@ -1,0 +1,114 @@
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#user-management {
+    margin: 20px auto;
+    width: 90%; /* Increased width for better visibility */
+    max-width: 900px; /* Max width */
+    background: #ffffff; /* White background for user management */
+    border-radius: 10px; /* Softer corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow for elevation */
+    padding: 40px; /* Increased padding for more space */
+    border: 1px solid #e0e0e0; /* Subtle border */
+}
+
+/* Dropdown styles */
+.role-select {
+    padding: 10px; /* Padding for better click area */
+    border: 1px solid #cccccc; /* Subtle border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* White background for dropdown */
+    color: #333; /* Dark text for readability */
+    font-size: 16px; /* Font size */
+    transition: border-color 0.3s ease; /* Transition for border color */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.role-select:focus {
+    outline: none; /* Remove outline */
+    border-color: #007BFF; /* Highlight border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow effect */
+}
+
+.role-select option {
+    padding: 10px; /* Padding for options */
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border-radius: 8px; /* Rounded corners for the table */
+    overflow: hidden; /* Ensure rounded corners are applied */
+}
+
+th, td {
+    padding: 15px; /* More padding for a formal look */
+    text-align: left;
+    border-bottom: 2px solid #dddddd; /* Thicker line for clarity */
+}
+
+th {
+    background-color: #007BFF; /* Official blue header */
+    color: white;
+    font-weight: bold; /* Make header text bold */
+    text-transform: uppercase; /* Uppercase text for headers */
+}
+
+tr:hover {
+    background-color: #e7f1ff; /* Light blue on hover */
+}
+
+td {
+    transition: background-color 0.2s ease; /* Smooth background change */
+}
+
+td:last-child {
+    text-align: center; /* Center the action buttons */
+}
+
+button {
+    background-color: #e74c3c; /* Red for delete buttons */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+@media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    th {
+        display: none; /* Hide headers for small screens */
+    }
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #dddddd; /* Consistent border for blocks */
+    }
+    td {
+        text-align: right;
+        position: relative;
+        padding-left: 50%; /* Padding for labels */
+    }
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 10px;
+        text-align: left;
+        font-weight: bold;
+        color: #333; /* Darker label color */
+    }
+}
