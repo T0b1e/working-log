@@ -1,4 +1,5 @@
 <?php
+// this action could run by admin
 require_once '../../config/db.php';
 
 try {

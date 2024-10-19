@@ -10,7 +10,6 @@
 <body>
     <div class="auth-container">
         <h2>Create Account</h2>
-        <!-- Form that submits data to AuthController -->
         <form action="../src/controllers/AuthController.php?action=signup" method="POST">
             <input type="text" name="username" id="username" placeholder="Username" required>
             <input type="email" name="email" id="email" placeholder="Email" required>
