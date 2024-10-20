@@ -52,11 +52,11 @@ class User {
 
     // Read user by email
     public function readByEmail($email) {
-        $query = "SELECT * FROM $this->table WHERE email = :email";
+        $email = urldecode($_POST['email']);
+        $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
-
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

@@ -25,6 +25,7 @@ class AuthController {
     }
 
     // Handle user signup
+    // Handle user signup
     public function signup() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $user = new User();
@@ -48,7 +49,7 @@ class AuthController {
             $user->address = $_POST['address'];
 
             // Set the default role to 'users'
-            $user->role = 'users';
+            $user->role = 'user';
 
             // Validate required fields
             if (empty($user->username) || empty($user->email) || empty($user->password) || empty($user->department) || empty($user->phone) || empty($user->address)) {
@@ -78,7 +79,6 @@ class AuthController {
         }
     }
 
-
     // Handle user login with JWT token generation
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -87,7 +87,7 @@ class AuthController {
     
             $user = new User();
             $user_data = $user->readByEmail($email); // Fetch user by email
-    
+
             if ($user_data && password_verify($password, $user_data['password'])) {
                 // Generate JWT token
                 $issuedAt = time();
@@ -109,7 +109,8 @@ class AuthController {
                 setcookie('role', $user_data['role'], $expirationTime, '/', '', false, true); // Store role in cookie
     
                 // Important: Call exit after header() to stop further script execution
-                header('Location: /working-log/public/dashboard.php');
+               // header('Location: /working-log/public/dashboard.php');
+			header("Location: ../../public/dashboard.php");
                 exit();
             } else {
                 // Login failed
@@ -145,6 +146,7 @@ class AuthController {
     public function logout() {
         setcookie('authToken', '', time() - 3600, '/');
         setcookie('user_id', '', time() - 3600, '/');
+        setcookie('role', '', time() - 3600, '/');
         session_start();
         session_unset();
         session_destroy();

@@ -10,7 +10,7 @@
 <body>
     <div class="auth-container">
         <h2>Create Account</h2>
-        <form action="../src/controllers/AuthController.php?action=signup" method="POST">
+        <form id="signup-form">
             <input type="text" name="username" id="username" placeholder="Username" required>
             <input type="email" name="email" id="email" placeholder="Email" required>
             <input type="password" name="password" id="password" placeholder="Password" required>
@@ -22,5 +22,47 @@
         <p id="error-message" style="color: red; display: none;"></p> <!-- Error message section -->
         <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const department = document.getElementById('department').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+
+            // AJAX request to send signup data
+            fetch('../src/controllers/AuthController.php?action=signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    username: username,
+                    email: email,
+                    password: password,
+                    department: department,
+                    phone: phone,
+                    address: address
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const errorMessage = document.getElementById('error-message');
+                if (data.success) {
+                    window.location.href = '../../public/login.php?message=Signup successful'; // Redirect on success
+                } else {
+                    errorMessage.innerText = data.message; // Show error message
+                    errorMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>

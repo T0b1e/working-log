@@ -1,4 +1,6 @@
 <?php
+
+
 session_start();
 
 // ตรวจสอบว่าผู้ใช้ได้รับการตรวจสอบสิทธิ์หรือไม่
@@ -49,7 +51,7 @@ $user_role = $_COOKIE['role'];
                     <option value="created_at">วันที่</option>
                     <option value="file_name">ชื่อเอกสาร</option>
                 </select>
-                <label for="searchTerm">🔍 ค้นหา:</label>
+                <label for="searchTerm"></label>
                 <input type="text" id="searchTerm" placeholder="กรอกข้อมูลค้นหา...">
                 <button id="searchButton">ค้นหา</button>
             </div>

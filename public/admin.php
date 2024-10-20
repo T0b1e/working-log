@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// ตรวจสอบว่าผู้ใช้ได้รับการตรวจสอบสิทธิ์หรือไม่
+if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$user_role = $_COOKIE['role'];
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 <head>

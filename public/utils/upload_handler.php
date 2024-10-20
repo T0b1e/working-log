@@ -2,11 +2,24 @@
 require_once '../../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Start session if it's not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Get the actual user_id from session or cookies
+    $user_id = isset($_COOKIE['user_id']) ? intval($_COOKIE['user_id']) : null;
+
+    if (!$user_id) {
+        echo json_encode(['success' => false, 'message' => 'User not authenticated']);
+        exit();
+    }
+
     // Get POST data
     $title = $_POST['title'];
     $description = $_POST['description'];
-    $priority = $_POST['priority'];  // Priority should now be in Thai
-    $status = $_POST['status'];      // Status should now be in Thai
+    $priority = $_POST['priority'];  // Priority in Thai
+    $status = $_POST['status'];      // Status in Thai
     $body = $_POST['body'];          // No need to json_decode unless it's an actual JSON string
     $file = isset($_FILES['fileToUpload']) ? $_FILES['fileToUpload'] : null;
 
@@ -19,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare("INSERT INTO messages (user_id, title, description, priority, status, body) 
                               VALUES (:user_id, :title, :description, :priority, :status, :body)");
         $stmt->execute([
-            ':user_id' => 1, // Placeholder for user_id, replace with actual session data
+            ':user_id' => $user_id, // Use actual user_id from session/cookies
             ':title' => $title,
             ':description' => $description,
             ':priority' => $priority,
@@ -40,12 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $file_name = basename($file["name"]);
             $target_file = $target_dir . $file_name;
 
+            // Move uploaded file to target directory
             if (move_uploaded_file($file["tmp_name"], $target_file)) {
                 // Insert file metadata into files table
                 $stmt = $db->prepare("INSERT INTO files (user_id, file_name, file_path, file_type, uploaded_at) 
                                       VALUES (:user_id, :file_name, :file_path, :file_type, NOW())");
                 $stmt->execute([
-                    ':user_id' => 1, // Placeholder for user_id, replace with actual session data
+                    ':user_id' => $user_id, // Use actual user_id from session/cookies
                     ':file_name' => $file_name,
                     ':file_path' => $target_file,
                     ':file_type' => $file["type"]

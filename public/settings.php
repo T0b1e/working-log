@@ -1,4 +1,16 @@
 <?php
+session_start();
+
+// ตรวจสอบว่าผู้ใช้ได้รับการตรวจสอบสิทธิ์หรือไม่
+if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$user_role = $_COOKIE['role'];
+?>
+
+<?php
 require_once '../src/controllers/AuthController.php'; // Include AuthController
 require_once '../src/models/User.php'; // Include User model
 
