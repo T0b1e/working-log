@@ -1,4 +1,4 @@
-/* General styles */
+/* General Styles */
 body {
     font-family: 'Sarabun', sans-serif;
     margin: 0;
@@ -25,7 +25,31 @@ body {
     }
 }
 
-/* Left side styles */
+/* Record Count Label */
+.record-count-container {
+    margin-bottom: 15px;
+}
+
+.record-count-label {
+    font-size: 14px;
+    color: #555;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Record Count Select */
+.recordCountSelect-class {
+    margin-top: 20px;
+}
+
+#recordCountSelect {
+    width: 150px;
+    padding: 5px;
+}
+
+/* Left Side */
 .left-side {
     width: 100%;
     background-color: #ffffff;
@@ -37,11 +61,11 @@ body {
 
 @media (min-width: 768px) {
     .left-side {
-        width: 60%;
+        width: 80%;
     }
 }
 
-/* Right side styles */
+/* Right Side */
 .right-side {
     width: 100%;
     background-color: #ffffff;
@@ -56,15 +80,16 @@ body {
     }
 }
 
-/* Search filter */
+/* Search Filter */
 .search-filter-container {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
     margin-bottom: 20px;
 }
 
 .search-filter-container label {
-    margin-right: 10px;
     font-size: 16px;
     color: #333;
 }
@@ -74,12 +99,12 @@ body {
     padding: 10px;
     border: 1px solid #cccccc;
     border-radius: 5px;
-    margin-right: 10px;
     font-size: 16px;
+    flex: 1;
 }
 
 .search-filter-container button {
-    background-color: #28a745;
+    background-color: #4caf50;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -89,10 +114,10 @@ body {
 }
 
 .search-filter-container button:hover {
-    background-color: #218838;
+    background-color: #388e3c;
 }
 
-/* Table styles */
+/* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -100,7 +125,7 @@ table {
 }
 
 th, td {
-    padding: 10px;
+    padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -112,35 +137,18 @@ th {
 }
 
 td {
-    word-wrap: break-word;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 14px;
     color: #333;
 }
 
-/* Adjusted width for description column */
-td.description-column {
-    max-width: 100px;
-}
-
-/* Control table size to fit inside container */
-table {
-    table-layout: fixed;  /* Ensures columns follow the set width */
-    width: 100%;  /* Table should fit within the container */
-    overflow: hidden;  /* Prevent horizontal scrolling */
-}
-
-/* Username column with ellipsis */
-.username-column {
-    width: 55px;
+td.description-column, td.username-column {
+    max-width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* Form container */
+/* Form Container */
 .form-container {
     width: 100%;
 }
@@ -170,7 +178,7 @@ select {
     font-size: 16px;
 }
 
-/* Buttons */
+/* Button Styles */
 button {
     width: 100%;
     padding: 12px;
@@ -187,14 +195,28 @@ button:hover {
     background-color: #388e3c;
 }
 
+.detail-btn, .edit-btn, .delete-btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.detail-btn {
+    color: #2196f3;
+    background-color: white;
+    border: 1px solid #2196f3;
+}
+
+.detail-btn:hover {
+    background-color: #2196f3;
+    color: white;
+}
+
 .edit-btn {
     color: #4caf50;
     background-color: white;
     border: 1px solid #4caf50;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
 }
 
 .edit-btn:hover {
@@ -206,10 +228,6 @@ button:hover {
     color: #d32f2f;
     background-color: white;
     border: 1px solid #d32f2f;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
 }
 
 .delete-btn:hover {
@@ -217,7 +235,7 @@ button:hover {
     color: white;
 }
 
-/* Modal styles */
+/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -233,13 +251,16 @@ button:hover {
 }
 
 .modal-content {
-    background-color: #fdfdfd;
+    background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     width: 80%;
     max-width: 600px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    text-align: center;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: 2px solid #4caf50;
 }
 
@@ -255,4 +276,74 @@ button:hover {
 
 .close-btn:hover {
     color: #b71c1c;
+}
+
+#modalDetails {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#modalDetails p {
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0;
+}
+
+#detailUrl {
+    display: inline-block;
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+#detailUrl:hover {
+    background-color: #388e3c;
+}
+
+.currentFileSelectionLabel {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+label[for="newFileUpload"],
+#newFileUpload {
+    margin-top: 20px;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+    }
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination-button {
+    padding: 10px 15px;
+    border: 1px solid #4caf50;
+    background-color: white;
+    color: #4caf50;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination-button.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+.pagination-button:hover {
+    background-color: #4caf50;
+    color: white;
 }

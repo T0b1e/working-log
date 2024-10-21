@@ -25,7 +25,6 @@ class AuthController {
     }
 
     // Handle user signup
-    // Handle user signup
     public function signup() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $user = new User();
@@ -109,8 +108,8 @@ class AuthController {
                 setcookie('role', $user_data['role'], $expirationTime, '/', '', false, true); // Store role in cookie
     
                 // Important: Call exit after header() to stop further script execution
-               // header('Location: /working-log/public/dashboard.php');
-			header("Location: ../../public/dashboard.php");
+                // header('Location: /working-log/public/dashboard.php');
+            header("Location: ../../public/dashboard.php");
                 exit();
             } else {
                 // Login failed
@@ -121,7 +120,7 @@ class AuthController {
             }
         }
     }    
-
+    
     // Middleware to authenticate requests using JWT
     public function authenticate() {
         if (isset($_COOKIE['authToken'])) {

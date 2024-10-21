@@ -1,5 +1,8 @@
 <?php
-session_start();
+// Only start session if it is not already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ตรวจสอบว่าผู้ใช้ได้รับการตรวจสอบสิทธิ์หรือไม่
 if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
@@ -15,7 +18,10 @@ require_once '../src/controllers/AuthController.php'; // Include AuthController
 require_once '../src/models/User.php'; // Include User model
 
 // Initialize session and get the logged-in user's ID from the cookie
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start session only if it's not already started
+}
+
 if (!isset($_COOKIE['authToken'])) {
     header('Location: login.php'); // Redirect to login if not authenticated
     exit();

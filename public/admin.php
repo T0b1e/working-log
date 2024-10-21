@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// ตรวจสอบว่าผู้ใช้ได้รับการตรวจสอบสิทธิ์หรือไม่
+// Check if user is authenticated
 if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
     header('Location: login.php');
     exit();
@@ -26,26 +26,44 @@ $user_role = $_COOKIE['role'];
         <div class="navbar-title"><a href="dashboard.php">🔙 กลับสู่แดชบอร์ด</a></div>
     </nav>
 
-    <h1>👥 จัดการผู้ใช้</h1>
+    <h1>👥 จัดการผู้ใช้และแท็ก</h1>
+    
     <div id="user-management">
         <h2>📋 ผู้ใช้ทั้งหมด</h2>
         <table id="userTable">
             <thead>
                 <tr>
-                    <th>รหัสผู้ใช้</th>
-                    <th>ชื่อผู้ใช้</th>
+                    <th class="user-code">รหัสผู้ใช้</th>
+                    <th class="user-name">ชื่อผู้ใช้</th>
                     <th>อีเมล</th>
                     <th>บทบาท</th>
                     <th>แผนก</th>
-                    <th>ที่อยู่</th>
+                    <th class="user-address">ที่อยู่</th>
                     <th>โทรศัพท์</th>
-                    <th>การกระทำ</th>
+                    <th class="user-action">ลบผู้ใช้</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- User data will be populated here -->
             </tbody>
         </table>
+    </div>
+
+    <div id="tag-management">
+        <h2>📝 จัดการ Priority และ Status</h2>
+        <div>
+            <h3>Priority</h3>
+            <ul id="priority-list"></ul>
+            <input type="text" id="new-priority" placeholder="Add new priority">
+            <button onclick="addPriority()">Add Priority</button>
+        </div>
+
+        <div>
+            <h3>Status</h3>
+            <ul id="status-list"></ul>
+            <input type="text" id="new-status" placeholder="Add new status">
+            <button onclick="addStatus()">Add Status</button>
+        </div>
     </div>
 
     <script>
@@ -59,8 +77,6 @@ $user_role = $_COOKIE['role'];
                     return response.json();
                 })
                 .then(data => {
-                    console.log("Response from server:", data);
-
                     const userTableBody = document.querySelector('#userTable tbody');
                     userTableBody.innerHTML = '';
 
@@ -96,47 +112,117 @@ $user_role = $_COOKIE['role'];
                 });
         }
 
-        function updateRole(userId, newRole) {
-            fetch('utils/update_user_role.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `user_id=${userId}&role=${newRole}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                } else {
-                    alert("Error updating role: " + data.message);
-                }
-            });
-        }
-
-        function removeUser(userId) {
-            if (confirm("คุณแน่ใจว่าต้องการลบผู้ใช้คนนี้?")) {
-                fetch('utils/remove_user.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `user_id=${userId}`
-                })
+        // Fetch tags (priority and status)
+        function fetchTags() {
+            fetch('utils/manage_tag.php')
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data)
                     if (data.success) {
-                        alert(data.message);
-                        fetchUsers(); // Refresh the user list
-                    } else {
-                        alert("Error removing user: " + data.message);
+                        // Populate priority list
+                        const priorityList = document.getElementById('priority-list');
+                        priorityList.innerHTML = '';
+                        data.priorities.forEach(priority => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `${priority.name} <button onclick="editPriority(${priority.id}, '${priority.name}')">Edit</button> <button onclick="deletePriority(${priority.id})">Delete</button>`;
+                            priorityList.appendChild(li);
+                        });
+
+                        // Populate status list
+                        const statusList = document.getElementById('status-list');
+                        statusList.innerHTML = '';
+                        data.statuses.forEach(status => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `${status.name} <button onclick="editStatus(${status.id}, '${status.name}')">Edit</button> <button onclick="deleteStatus(${status.id})">Delete</button>`;
+                            statusList.appendChild(li);
+                        });
                     }
                 });
+        }
+
+        // Add priority
+        function addPriority() {
+            const priorityName = document.getElementById('new-priority').value;
+            fetch('utils/manage_tag.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `action=add_priority&name=${priorityName}`
+            }).then(() => fetchTags());
+        }
+
+        // Add status
+        function addStatus() {
+            const statusName = document.getElementById('new-status').value;
+            fetch('utils/manage_tag.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `action=add_status&name=${statusName}`
+            }).then(() => fetchTags());
+        }
+
+        // Edit priority
+        function editPriority(id, name) {
+            const newName = prompt("Enter new priority name:", name);
+            if (newName) {
+                fetch('utils/manage_tag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `edit_action=edit_priority&id=${id}&name=${newName}`
+                }).then(() => fetchTags());
             }
         }
 
-        // Fetch users on page load
-        window.onload = fetchUsers;
+        // Edit status
+        function editStatus(id, name) {
+            const newName = prompt("Enter new status name:", name);
+            if (newName) {
+                fetch('utils/manage_tag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `edit_action=edit_status&id=${id}&name=${newName}`
+                }).then(() => fetchTags());
+            }
+        }
+
+        // Delete priority
+        function deletePriority(id) {
+            if (confirm("Are you sure you want to delete this priority?")) {
+                fetch('utils/manage_tag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `delete_action=delete_priority&id=${id}`
+                }).then(() => fetchTags());
+            }
+        }
+
+        // Delete status
+        function deleteStatus(id) {
+            if (confirm("Are you sure you want to delete this status?")) {
+                fetch('utils/manage_tag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `delete_action=delete_status&id=${id}`
+                }).then(() => fetchTags());
+            }
+        }
+
+        // Fetch data on page load
+        window.onload = function() {
+            fetchUsers();
+            fetchTags();
+        };
     </script>
 </body>
 </html>

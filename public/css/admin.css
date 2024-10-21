@@ -1,79 +1,116 @@
+/* General Styles */
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 #user-management {
     margin: 20px auto;
-    width: 90%; /* Increased width for better visibility */
-    max-width: 900px; /* Max width */
-    background: #ffffff; /* White background for user management */
-    border-radius: 10px; /* Softer corners */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow for elevation */
-    padding: 40px; /* Increased padding for more space */
-    border: 1px solid #e0e0e0; /* Subtle border */
+    width: 90%;
+    max-width: 1000px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    border: 1px solid #e0e0e0;
 }
 
-/* Dropdown styles */
+/* Column Width Settings */
+.user-code {
+    width: 10%;
+}
+
+.user-name {
+    width: 15%;
+}
+
+.user-action {
+    width: 10%;
+}
+
+th:nth-child(3) {
+    width: 20%;
+}
+
+/* Role Column Styling */
+th:nth-child(4) {
+    width: 15%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .role-select {
-    padding: 10px; /* Padding for better click area */
-    border: 1px solid #cccccc; /* Subtle border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #ffffff; /* White background for dropdown */
-    color: #333; /* Dark text for readability */
-    font-size: 16px; /* Font size */
-    transition: border-color 0.3s ease; /* Transition for border color */
-    cursor: pointer; /* Pointer cursor on hover */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    margin: 0 10px;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
 }
 
 .role-select:focus {
-    outline: none; /* Remove outline */
-    border-color: #007BFF; /* Highlight border color on focus */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow effect */
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.role-select option {
-    padding: 10px; /* Padding for options */
+th:nth-child(5),
+th:nth-child(7) {
+    width: 10%;
 }
 
+.user-address {
+    width: 20%;
+}
 
+th:nth-child(8) {
+    width: 10%;
+}
+
+/* Table Styles */
 table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     margin: 20px 0;
-    border-radius: 8px; /* Rounded corners for the table */
-    overflow: hidden; /* Ensure rounded corners are applied */
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th, td {
-    padding: 15px; /* More padding for a formal look */
+    padding: 15px;
     text-align: left;
-    border-bottom: 2px solid #dddddd; /* Thicker line for clarity */
+    border-bottom: 2px solid #ddd;
 }
 
 th {
-    background-color: #007BFF; /* Official blue header */
-    color: white;
-    font-weight: bold; /* Make header text bold */
-    text-transform: uppercase; /* Uppercase text for headers */
+    background-color: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 tr:hover {
-    background-color: #e7f1ff; /* Light blue on hover */
+    background-color: #e7f1ff;
 }
 
 td {
-    transition: background-color 0.2s ease; /* Smooth background change */
+    transition: background-color 0.2s ease;
 }
 
 td:last-child {
-    text-align: center; /* Center the action buttons */
+    text-align: center;
 }
 
+/* Button Styles */
 button {
-    background-color: #e74c3c; /* Red for delete buttons */
-    color: white;
+    background-color: #e74c3c;
+    color: #fff;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -82,25 +119,30 @@ button {
 }
 
 button:hover {
-    background-color: #c0392b; /* Darker red on hover */
+    background-color: #c0392b;
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 600px) {
     table, thead, tbody, th, td, tr {
         display: block;
     }
+    
     th {
-        display: none; /* Hide headers for small screens */
+        display: none;
     }
+    
     tr {
         margin-bottom: 15px;
-        border: 1px solid #dddddd; /* Consistent border for blocks */
+        border: 1px solid #dddddd;
     }
+    
     td {
         text-align: right;
         position: relative;
-        padding-left: 50%; /* Padding for labels */
+        padding-left: 50%;
     }
+    
     td:before {
         content: attr(data-label);
         position: absolute;
@@ -109,6 +151,6 @@ button:hover {
         padding-left: 10px;
         text-align: left;
         font-weight: bold;
-        color: #333; /* Darker label color */
+        color: #333;
     }
 }
