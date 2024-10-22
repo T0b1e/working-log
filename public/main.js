@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    document.getElementById('clearSearchButton').addEventListener('click', function() {
+        // Clear search inputs
+        document.getElementById('searchTerm').value = '';
+        document.getElementById('searchCriteria').value = 'username'; // Reset to default criteria
+        fetchUserData(); // This will load data without search filters
+    });
+
     // Function to fetch priorities and statuses
     function fetchOptions() {
         fetch('utils/manage_tag.php')
@@ -163,24 +170,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Use Event Delegation to handle dynamic elements like edit, detail, delete buttons
     document.querySelector('#userTable').addEventListener('click', function (event) {
-        const target = event.target;
-        const messageId = target.closest('button').dataset.id;
-
+        const target = event.target.closest('button');  // Find the closest button
+    
+        if (!target || !target.dataset.id) return;  // Ensure the target is a button with dataset
+    
+        const messageId = target.dataset.id;
+    
         // Handle Detail
         if (target.classList.contains('detail-btn')) {
             fetchMessageAndDisplayModal(messageId, 'detail');
         }
-
+    
         // Handle Edit
         if (target.classList.contains('edit-btn')) {
             fetchMessageAndDisplayModal(messageId, 'edit');
         }
-
+    
         // Handle Delete
         if (target.classList.contains('delete-btn')) {
             handleDelete(messageId);
         }
     });
+    
 
     // Handle message fetching and modal display for both detail and edit
     function fetchMessageAndDisplayModal(messageId, mode) {

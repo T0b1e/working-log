@@ -45,19 +45,21 @@ $user_role = $_COOKIE['role'];
 
     <div class="split-container">
         <div class="left-side">
-            <div class="search-filter-container">
-                <label for="searchCriteria">🔍 ค้นหาตาม:</label>
-                <select id="searchCriteria">
-                    <option value="username">ผู้ส่ง</option>
-                    <option value="title">หัวข้อ</option>
-                    <option value="priority">ลำดับความสำคัญ</option>
-                    <option value="status">สถานะ</option>
-                    <option value="created_at">วันที่</option>
-                    <option value="file_name">ชื่อเอกสาร</option>
-                </select>
-                <input type="text" id="searchTerm" placeholder="กรอกข้อมูลค้นหา...">
-                <button id="searchButton">🔎 ค้นหา</button>
-            </div>
+
+        <div class="search-filter-container">
+            <label for="searchCriteria">🔍 ค้นหาตาม:</label>
+            <select id="searchCriteria">
+                <option value="username">ผู้ส่ง</option>
+                <option value="title">หัวข้อ</option>
+                <option value="priority">ลำดับความสำคัญ</option>
+                <option value="status">สถานะ</option>
+                <option value="created_at">วันที่</option>
+                <option value="file_name">ชื่อเอกสาร</option>
+            </select>
+            <input type="text" id="searchTerm" placeholder="กรอกข้อมูลค้นหา...">
+            <button id="clearSearchButton">❌ ล้างการค้นหา</button> <!-- Clear search button -->
+            <button id="searchButton">🔎 ค้นหา</button>
+        </div>
 
             <div class="record-count-container">
                 <span id="recordCount" class="record-count-label">📊 จำนวนบันทึกทั้งสิ้น: 0</span>
@@ -69,7 +71,7 @@ $user_role = $_COOKIE['role'];
                         <th>📅 วันที่</th>
                         <th>⏰ เวลา</th>
                         <th class="username-column">👤 ชื่อผู้ใช้</th>
-                        <th>📝 หัวข้อ</th>
+                        <th class="title-column">📝 หัวข้อ</th>
                         <th class="description-column">📄 รายละเอียด</th>
                         <th>⚙️ สถานะ</th>
                         <th>📄 รายละเอียด</th>
@@ -101,12 +103,19 @@ $user_role = $_COOKIE['role'];
                 <form id="uploadForm" enctype="multipart/form-data">
                     <label for="title">📄 หัวข้อ</label>
                     <select id="title" name="title" required>
+                        <option value="การออกกฎ ระเบียบ ประกาศ และข้อบังคับ">การออกกฎ ระเบียบ ประกาศ และข้อบังคับ</option>
+                        <option value="ตรวจร่างสัญญา MOU MOA">ตรวจร่างสัญญา MOU MOA</option>			
+                        <option value="การร้องเรียน กล่าาวโทษ">การร้องเรียน กล่าาวโทษ</option>
+                        <option value="ความรับผิดทางละเมิด">ความรับผิดทางละเมิด</option>
+                        <option value="เรียกชดใช้ทุน">เรียกชดใช้ทุน</option>
+                        <option value="อุทธรณ์และร้องทุกข์">อุทธรณ์และร้องทุกข์</option>
+                        <option value="เรียกชดใช้ทุน">เรียกชดใช้ทุน</option>
+                        <option value="จรรยาบรรณ">จรรยาบรรณ</option>			
+                        <option value="มอบอำนาจ">มอบอำนาจ</option>
+                        <option value="งานวินัย">งานวินัย</option>
+                        <option value="คดี">คดี</option>
+                        <option value="ITA">ITA</option>
                         <option value="เรื่องทั่วไป">เรื่องทั่วไป</option>
-                        <option value="แก้ไข">แก้ไข</option>
-                        <option value="ตรวจสอบ">ตรวจสอบ</option>
-                        <option value="รายงานปัญหา">รายงานปัญหา</option>
-                        <option value="ร้องทุกข์">ร้องทุกข์</option>
-                        <option value="ร้องเรียน">ร้องเรียน</option>
                     </select>
 
                     <label for="description">📄 รายละเอียด</label>

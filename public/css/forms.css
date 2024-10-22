@@ -61,9 +61,10 @@ body {
 
 @media (min-width: 768px) {
     .left-side {
-        width: 80%;
+        width: 85%; /* Increased width of left-side */
     }
 }
+
 
 /* Right Side */
 .right-side {
@@ -76,7 +77,7 @@ body {
 
 @media (min-width: 768px) {
     .right-side {
-        width: 38%;
+        width: 30%; /* Reduced width of right-side */
     }
 }
 
@@ -122,6 +123,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    white-space: nowrap; /* Prevent wrapping of table content */
 }
 
 th, td {
@@ -139,11 +141,27 @@ th {
 td {
     font-size: 14px;
     color: #333;
+    white-space: nowrap; /* Ensure cells don't wrap to new lines */
+}
+
+/* Title Column */
+th.title-column{
+    max-width: 50px; /* Set a fixed width for the title column */
+    white-space: nowrap; /* Prevents wrapping to new lines */
+    overflow: hidden; /* Hides overflowed content */
+    text-overflow: ellipsis; /* Adds ellipsis when content is too long */
+}
+
+td.title-column {
+    max-width: 50px; /* Set a fixed width for the title column */
+    white-space: nowrap; /* Prevents wrapping to new lines */
+    overflow: hidden; /* Hides overflowed content */
+    text-overflow: ellipsis; /* Adds ellipsis when content is too long */
 }
 
 td.description-column, td.username-column {
-    max-width: 200px;
-    white-space: nowrap;
+    max-width: none; /* Remove width restriction */
+    white-space: nowrap; /* Prevent wrapping */
     overflow: hidden;
     text-overflow: ellipsis;
 }
