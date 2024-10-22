@@ -1,5 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    const editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            
+            const formData = new FormData(editForm); // Collect form data
+            const messageId = document.getElementById('editMessageId').value; // Get the message ID to edit
+            
+            fetch(`utils/update_message.php`, {  // Send data to your PHP handler
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('แก้ไขข้อมูลสำเร็จ!');  // Show success message
+                    document.getElementById('editModal').style.display = 'none'; // Close the modal
+                    fetchUserData();  // Refresh the table data after editing
+                } else {
+                    alert('เกิดข้อผิดพลาดในการแก้ไข: ' + data.message);  // Show error message if update fails
+                }
+            })
+            .catch(error => console.error('Error editing message:', error));
+        });
+    }
+
     document.getElementById('clearSearchButton').addEventListener('click', function() {
         // Clear search inputs
         document.getElementById('searchTerm').value = '';
@@ -7,16 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchUserData(); // This will load data without search filters
     });
 
-    // Function to fetch priorities and statuses
+    // Function to fetch priorities, statuses, and titles dynamically
     function fetchOptions() {
         fetch('utils/manage_tag.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    populateDropdown('priority', data.priorities);
-                    populateDropdown('status', data.statuses);
-                    populateDropdown('editPriority', data.priorities);
-                    populateDropdown('editStatus', data.statuses);
+                    populateDropdown('priority', data.priorities);  // Populate form priority
+                    populateDropdown('status', data.statuses);      // Populate form status
+                    populateDropdown('editPriority', data.priorities); // Populate edit modal priority
+                    populateDropdown('editStatus', data.statuses);     // Populate edit modal status
+                    populateDropdown('title', data.titles);         // Populate form title
+                    populateDropdown('editTitle', data.titles);     // Populate edit modal title
                 } else {
                     console.error('Failed to fetch options', data.error);
                 }
@@ -36,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.appendChild(optionElement);
         });
     }
+
 
     // Call fetchOptions on page load to populate dropdowns
     window.onload = function() {

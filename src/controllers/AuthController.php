@@ -80,6 +80,9 @@ class AuthController {
 
     // Handle user login with JWT token generation
     public function login() {
+
+        session_start();
+        
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -112,11 +115,14 @@ class AuthController {
             header("Location: ../../public/dashboard.php");
                 exit();
             } else {
-                // Login failed
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Invalid username or password'
-                ]);
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                // Set error message in session
+                $_SESSION['login_error'] = 'Invalid username or password';
+                // Redirect back to login page
+                header('Location: ../../public/login.php');
+                exit();
             }
         }
     }    

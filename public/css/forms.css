@@ -77,7 +77,7 @@ body {
 
 @media (min-width: 768px) {
     .right-side {
-        width: 30%; /* Reduced width of right-side */
+        width: 35%; /* Reduced width of right-side */
     }
 }
 
@@ -123,7 +123,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    white-space: nowrap; /* Prevent wrapping of table content */
 }
 
 th, td {
@@ -136,31 +135,28 @@ th {
     background-color: #4caf50;
     color: #fff;
     font-size: 16px;
+    white-space: nowrap; /* Allow text to wrap */
 }
 
 td {
     font-size: 14px;
     color: #333;
-    white-space: nowrap; /* Ensure cells don't wrap to new lines */
 }
 
 /* Title Column */
-th.title-column{
-    max-width: 50px; /* Set a fixed width for the title column */
-    white-space: nowrap; /* Prevents wrapping to new lines */
-    overflow: hidden; /* Hides overflowed content */
-    text-overflow: ellipsis; /* Adds ellipsis when content is too long */
-}
-
+th.title-column,
 td.title-column {
-    max-width: 50px; /* Set a fixed width for the title column */
-    white-space: nowrap; /* Prevents wrapping to new lines */
-    overflow: hidden; /* Hides overflowed content */
-    text-overflow: ellipsis; /* Adds ellipsis when content is too long */
+    width: 100px;
+    max-width: 100px;
+    white-space: nowrap; /* Allow text to wrap */
+    overflow: visible;
+    text-overflow: clip;
+    word-wrap: break-word;
 }
 
 td.description-column, td.username-column {
-    max-width: none; /* Remove width restriction */
+    width: 100px;
+    max-width: 100px;
     white-space: nowrap; /* Prevent wrapping */
     overflow: hidden;
     text-overflow: ellipsis;
@@ -182,6 +178,14 @@ label {
     font-size: 16px;
     margin-bottom: 8px;
     color: #555;
+}
+
+textarea#description,
+textarea#body {
+    width: 80%; /* Adjust the percentage to reduce width */
+    max-width: 600px; /* Optional: Set a max-width if needed */
+    margin: 0 auto; /* Center the textareas horizontally */
+    display: block;
 }
 
 input[type="text"],

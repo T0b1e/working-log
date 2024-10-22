@@ -74,8 +74,8 @@ $user_role = $_COOKIE['role'];
                         <th class="title-column">📝 หัวข้อ</th>
                         <th class="description-column">📄 รายละเอียด</th>
                         <th>⚙️ สถานะ</th>
-                        <th>📄 รายละเอียด</th>
                         <th>📎 เอกสาร</th>
+                        <th>📄 รายละเอียดเพิ่มเติม</th>
                         <th>✏️ แก้ไข</th>
                         <th>🗑️ ลบ</th>
                     </tr>
@@ -101,21 +101,10 @@ $user_role = $_COOKIE['role'];
             <div class="form-container">
                 <h2>📝 แบบบันทึกการปฏิบัติงาน</h2>
                 <form id="uploadForm" enctype="multipart/form-data">
+
                     <label for="title">📄 หัวข้อ</label>
                     <select id="title" name="title" required>
-                        <option value="การออกกฎ ระเบียบ ประกาศ และข้อบังคับ">การออกกฎ ระเบียบ ประกาศ และข้อบังคับ</option>
-                        <option value="ตรวจร่างสัญญา MOU MOA">ตรวจร่างสัญญา MOU MOA</option>			
-                        <option value="การร้องเรียน กล่าาวโทษ">การร้องเรียน กล่าาวโทษ</option>
-                        <option value="ความรับผิดทางละเมิด">ความรับผิดทางละเมิด</option>
-                        <option value="เรียกชดใช้ทุน">เรียกชดใช้ทุน</option>
-                        <option value="อุทธรณ์และร้องทุกข์">อุทธรณ์และร้องทุกข์</option>
-                        <option value="เรียกชดใช้ทุน">เรียกชดใช้ทุน</option>
-                        <option value="จรรยาบรรณ">จรรยาบรรณ</option>			
-                        <option value="มอบอำนาจ">มอบอำนาจ</option>
-                        <option value="งานวินัย">งานวินัย</option>
-                        <option value="คดี">คดี</option>
-                        <option value="ITA">ITA</option>
-                        <option value="เรื่องทั่วไป">เรื่องทั่วไป</option>
+                        <!-- Dynamic title options will be inserted here by JS -->
                     </select>
 
                     <label for="description">📄 รายละเอียด</label>
@@ -161,11 +150,13 @@ $user_role = $_COOKIE['role'];
             <h2>✏️ แก้ไขข้อมูล</h2>
             <form id="editForm">
                 <label for="editTitle">📄 หัวข้อ</label>
-                <input type="text" id="editTitle" name="title" required>
+                <select id="editTitle" name="title">
+                    <!-- Dynamic title options will be inserted here by JS -->
+                </select>
                 <label for="editDescription">📄 รายละเอียด</label>
-                <textarea id="editDescription" name="description" required></textarea>
+                <textarea id="editDescription" name="description"></textarea>
                 <label for="editPriority">⚡ ลำดับความสำคัญ</label>
-                <select id="editPriority" name="priority" required>
+                <select id="editPriority" name="priority">
                     <option value="low">ด่วนที่สุด</option>
                     <option value="medium">ด่วน</option>
                     <option value="high">ปกติ</option>

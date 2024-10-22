@@ -11,13 +11,15 @@
     <div class="auth-container">
         <h2>Login</h2>
         <form action="../src/controllers/AuthController.php?action=login" method="POST">
-        <input type="email" name="email" id="email" placeholder="Email" required>
-        <input type="password" name="password" id="password" placeholder="Password" required>
-        <button type="submit">Login</button>
+            <input type="email" name="email" id="email" placeholder="Email" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
         </form>
-        <p id="error-message" style="color: red; display: none;"></p> 
+        <?php if (!empty($_SESSION['login_error'])): ?>
+    <p id="error-message" style="color: red;"><?php echo $_SESSION['login_error']; ?></p>
+    <?php unset($_SESSION['login_error']); ?>
+<?php endif; ?>
         <p>Don't have an account? <a href="signup.php">Sign up here</a></p>
-
     </div>
 </body>
 </html>
