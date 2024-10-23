@@ -180,14 +180,6 @@ label {
     color: #555;
 }
 
-textarea#description,
-textarea#body {
-    width: 80%; /* Adjust the percentage to reduce width */
-    max-width: 600px; /* Optional: Set a max-width if needed */
-    margin: 0 auto; /* Center the textareas horizontally */
-    display: block;
-}
-
 input[type="text"],
 input[type="file"],
 textarea,

@@ -22,47 +22,52 @@
         <p id="error-message" style="color: red; display: none;"></p> <!-- Error message section -->
         <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
-
     <script>
-        document.getElementById('signup-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const department = document.getElementById('department').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const department = document.getElementById('department').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
 
-            // AJAX request to send signup data
-            fetch('../src/controllers/AuthController.php?action=signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    username: username,
-                    email: email,
-                    password: password,
-                    department: department,
-                    phone: phone,
-                    address: address
-                })
+        // AJAX request to send signup data
+        fetch('../src/controllers/AuthController.php?action=signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                username: username,
+                email: email,
+                password: password,
+                department: department,
+                phone: phone,
+                address: address
             })
-            .then(response => response.json())
-            .then(data => {
-                const errorMessage = document.getElementById('error-message');
-                if (data.success) {
-                    window.location.href = '../../public/login.php?message=Signup successful'; // Redirect on success
-                } else {
-                    errorMessage.innerText = data.message; // Show error message
-                    errorMessage.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            const errorMessage = document.getElementById('error-message');
+            if (data.success) {
+                // Redirect to login page on success
+                window.location.href = 'login.php'; 
+            } else {
+                // Show error message in red if signup fails
+                errorMessage.innerText = data.message || 'An error occurred during signup.';
+                errorMessage.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.innerText = 'An error occurred. Please try again later.';
+            errorMessage.style.display = 'block';
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>

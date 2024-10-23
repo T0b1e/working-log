@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
+                console.log(data)
                 userTableBody.innerHTML = '';  // Clear loading message
                 if (data.success) {
                     if (!searchCriteria && !searchTerm) {

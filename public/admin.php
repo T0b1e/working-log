@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+// Check if the necessary cookies are set
+if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['user_id']) || !isset($_COOKIE['role'])) {
+    header('Location: login.php');
+    exit();
+}
+
+// Retrieve the user's role and ID from cookies
+$user_role = $_COOKIE['role'];
+$current_user_id = $_COOKIE['user_id'];
+?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -63,6 +76,36 @@
     </div>
 
     <script>
+        // Current user ID and role from cookies
+        const currentUserId = <?php echo json_encode($current_user_id); ?>;
+        const currentUserRole = <?php echo json_encode($user_role); ?>;
+
+        // Remove user by user_id
+        function removeUser(user_id) {
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้คนนี้?")) {
+                fetch('utils/remove_user.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `user_id=${user_id}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("ผู้ใช้ถูกลบเรียบร้อยแล้ว");
+                        fetchUsers(); // Refresh the user list after deletion
+                    } else {
+                        alert("เกิดข้อผิดพลาด: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+                });
+            }
+        }
+
         // Fetch all users
         function fetchUsers() {
             fetch('utils/fetch_all_users.php') 
@@ -73,28 +116,59 @@
 
                     if (data.success) {
                         data.data.forEach(user => {
+                            const isCurrentUser = user.user_id == currentUserId; // Check if this is the current user
+
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td data-label="รหัสผู้ใช้">${user.user_id}</td>
                                 <td data-label="ชื่อผู้ใช้">${user.username}</td>
                                 <td data-label="อีเมล">${user.email}</td>
                                 <td data-label="บทบาท">
-                                    <select onchange="updateRole(${user.user_id}, this.value)" class="role-select">
+                                    <select ${isCurrentUser ? 'disabled' : ''} onchange="handleRoleChange(${user.user_id}, this.value)" class="role-select">
                                         <option value="user" ${user.role === 'user' ? 'selected' : ''}>ผู้ใช้</option>
                                         <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>ผู้ดูแลระบบ</option>
                                     </select>
+                                    <button id="save-button-${user.user_id}" style="display:none;" onclick="saveRoleChange(${user.user_id})">บันทึก</button>
                                 </td>
                                 <td data-label="แผนก">${user.department}</td>
                                 <td data-label="ที่อยู่">${user.address}</td>
                                 <td data-label="โทรศัพท์">${user.phone}</td>
                                 <td data-label="การกระทำ">
-                                    <button onclick="removeUser(${user.user_id})">ลบผู้ใช้</button>
+                                    <button ${isCurrentUser ? 'disabled' : ''} onclick="removeUser(${user.user_id})">ลบผู้ใช้</button>
                                 </td>
                             `;
                             userTableBody.appendChild(row);
                         });
                     }
                 });
+        }
+
+        // Handle role change, show save button
+        function handleRoleChange(userId, newRole) {
+            const saveButton = document.getElementById(`save-button-${userId}`);
+            saveButton.style.display = 'inline'; // Show the save button
+        }
+
+        // Save the new role when the save button is clicked
+        function saveRoleChange(userId) {
+            const newRole = document.querySelector(`#userTable select[onchange="handleRoleChange(${userId}, this.value)"]`).value;
+
+            fetch('utils/update_user_role.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `user_id=${userId}&role=${newRole}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('บทบาทได้ถูกเปลี่ยนสำเร็จ');
+                    fetchUsers(); // Refresh user list after update
+                } else {
+                    alert('Error เปลี่ยนแปลงบทบาท: ' + data.message);
+                }
+            });
         }
 
         // Fetch priorities, statuses, and titles
@@ -185,7 +259,7 @@
 
         // Edit Priority
         function editPriority(id, name) {
-            const newName = prompt("กรุณากรอกชื่อ Priority ใหม่:", name);
+            const newName = prompt("กรุณากรอกชื่อ ลำดับความสำคัญ ใหม่:", name);
             if (newName) {
                 fetch('utils/manage_tag.php', {
                     method: 'POST',
@@ -199,7 +273,7 @@
 
         // Edit Status
         function editStatus(id, name) {
-            const newName = prompt("กรุณากรอกชื่อ Status ใหม่:", name);
+            const newName = prompt("กรุณากรอกชื่อ ลำดับความสำคัญ ใหม่:", name);
             if (newName) {
                 fetch('utils/manage_tag.php', {
                     method: 'POST',
@@ -226,7 +300,7 @@
 
         // Delete Priority
         function deletePriority(id) {
-            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบ Priority นี้?")) {
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบ ลำดับความสำคัญ นี้?")) {
                 fetch('utils/manage_tag.php', {
                     method: 'POST',
                     headers: {
@@ -239,7 +313,7 @@
 
         // Delete Status
         function deleteStatus(id) {
-            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบ Status นี้?")) {
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบ ลำดับความสำคัญ นี้?")) {
                 fetch('utils/manage_tag.php', {
                     method: 'POST',
                     headers: {

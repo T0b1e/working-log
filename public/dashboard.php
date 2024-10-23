@@ -38,6 +38,10 @@ $user_role = $_COOKIE['role'];
             <?php if ($user_role === 'admin'): ?>
                 <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>
             <?php endif; ?>
+            
+            <?php  if ($user_role === 'admin'): ?>
+                <!-- <li><a href="view.php">dashboard</a></li> -->
+            <?php endif; ?>
             <li><a href="settings.php">⚙️ การตั้งค่าผู้ใช้</a></li>
             <li><a href="logout.php">🚪 ออกจากระบบ</a></li>
         </ul>
