@@ -14,7 +14,50 @@ try {
     $user_id = isset($_COOKIE['user_id']) ? $_COOKIE['user_id'] : null;
     $user_role = isset($_COOKIE['role']) ? $_COOKIE['role'] : null;
 
-    // Initialize the base query
+    // Initialize the base query to count total records (without limit)
+    $countQuery = "
+    SELECT COUNT(*) AS total_records
+    FROM users
+    INNER JOIN messages ON users.user_id = messages.user_id
+    LEFT JOIN message_files ON messages.message_id = message_files.message_id
+    LEFT JOIN files ON message_files.file_id = files.file_id
+    WHERE 1=1";
+
+    // If not admin, fetch only the messages for the specific user
+    if ($user_role !== 'admin') {
+        $countQuery .= " AND users.user_id = :user_id";
+    }
+
+    // Check for search criteria and term
+    $criteria = isset($_GET['criteria']) ? $_GET['criteria'] : '';
+    $term = isset($_GET['term']) ? $_GET['term'] : '';
+
+    if ($criteria && $term) {
+        $allowedCriteria = ['username', 'title', 'status', 'created_at', 'file_name'];
+        if (in_array($criteria, $allowedCriteria)) {
+            $countQuery .= " AND $criteria LIKE :term";
+        } else {
+            throw new Exception('Invalid search criteria provided.');
+        }
+    }
+
+    // Prepare and execute the count statement
+    $countStmt = $db->prepare($countQuery);
+    if ($user_role !== 'admin') {
+        $countStmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    }
+    if ($criteria && $term) {
+        $countStmt->bindValue(':term', '%' . $term . '%');
+    }
+    $countStmt->execute();
+    $totalRecords = $countStmt->fetchColumn();
+
+    // Get pagination parameters from the request
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Default limit to 10
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;     // Default page to 1
+    $offset = ($page - 1) * $limit;
+
+    // Initialize the base query with limit and offset for data retrieval
     $query = "
     SELECT 
         users.user_id, 
@@ -31,59 +74,44 @@ try {
     LEFT JOIN files ON message_files.file_id = files.file_id
     WHERE 1=1";
 
-    // Check user role and adjust query accordingly
     if ($user_role !== 'admin') {
-        // If not admin, fetch only the messages for the specific user
         $query .= " AND users.user_id = :user_id";
     }
 
-    // Check for search criteria and term
-    $criteria = isset($_GET['criteria']) ? $_GET['criteria'] : '';
-    $term = isset($_GET['term']) ? $_GET['term'] : '';
-
-    // Prepare statement for search
     if ($criteria && $term) {
-        // Allowed criteria to prevent SQL injection
-        $allowedCriteria = ['username', 'title', 'status', 'created_at', 'file_name'];
-        if (in_array($criteria, $allowedCriteria)) {
-            $query .= " AND $criteria LIKE :term";
-        } else {
-            throw new Exception('Invalid search criteria provided.');
-        }
+        $query .= " AND $criteria LIKE :term";
+    }
+
+    // Add limit and offset
+    if ($limit > 0) {
+        $query .= " LIMIT :limit OFFSET :offset";
     }
 
     // Prepare the statement
     $stmt = $db->prepare($query);
 
-    // Bind the user_id if the user is not an admin
+    // Bind parameters
     if ($user_role !== 'admin') {
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     }
-
-    // Bind the search term if criteria is set
     if ($criteria && $term) {
         $stmt->bindValue(':term', '%' . $term . '%');
     }
-
-    $stmt->execute();
-
-    // Fetch all results
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Check if there are no results
-    if (empty($results)) {
-        echo json_encode([
-            'success' => true,
-            'data' => [],
-            'message' => 'No data found matching the criteria.'
-        ]);
-        exit();
+    if ($limit > 0) {
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     }
 
-    // Return results as JSON
+    // Execute the query
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Return results along with total records for pagination calculation
     echo json_encode([
         'success' => true,
-        'data' => $results
+        'data' => $results,
+        'totalRecords' => $totalRecords,
+        'totalPages' => $limit > 0 ? ceil($totalRecords / $limit) : 1
     ]);
 
 } catch (PDOException $e) {

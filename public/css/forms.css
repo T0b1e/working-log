@@ -162,6 +162,17 @@ td.description-column, td.username-column {
     text-overflow: ellipsis;
 }
 
+/* Document Column */
+th.document-column,
+td.document-column {
+    width: 120px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    word-wrap: break-word;
+}
+
 /* Form Container */
 .form-container {
     width: 100%;
@@ -182,8 +193,8 @@ label {
 
 input[type="text"],
 input[type="file"],
-textarea,
-select {
+textarea
+ {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -207,6 +218,35 @@ button {
 
 button:hover {
     background-color: #388e3c;
+}
+
+/* Style for the progress bar */
+.styled-progress {
+    width: 100%;
+    height: 20px;                /* Set height for visibility */
+    border-radius: 10px;         /* Rounded corners */
+    overflow: hidden;
+    -webkit-appearance: none;    /* Remove default styling */
+    appearance: none;
+}
+
+/* Webkit-based browsers styling */
+.styled-progress::-webkit-progress-bar {
+    background-color: #f3f3f3;   /* Light grey background */
+    border-radius: 10px;
+}
+
+.styled-progress::-webkit-progress-value {
+    background: linear-gradient(to right, #4caf50, #76c7c0); /* Green gradient */
+    border-radius: 10px;        /* Rounded corners */
+    transition: width 0.2s ease; /* Smooth transition */
+}
+
+/* Firefox styling */
+.styled-progress::-moz-progress-bar {
+    background: linear-gradient(to right, #4caf50, #76c7c0); /* Green gradient */
+    border-radius: 10px;
+    transition: width 0.2s ease;
 }
 
 .detail-btn, .edit-btn, .delete-btn {
@@ -262,6 +302,17 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    max-height: 300px; /* Set a maximum height for dropdowns */
+    overflow-y: auto;  /* Enable scrolling within dropdown if overflow */
 }
 
 .modal-content {

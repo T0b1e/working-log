@@ -66,4 +66,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         echo "<p style='color: red;'>❌ รหัสผ่านปัจจุบันไม่ถูกต้อง.</p>";
     }
 }
-    

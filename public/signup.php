@@ -9,17 +9,18 @@
 </head>
 <body>
     <div class="auth-container">
-        <h2>Create Account</h2>
-        <form id="signup-form">
-            <input type="text" name="username" id="username" placeholder="Username" required>
-            <input type="email" name="email" id="email" placeholder="Email" required>
-            <input type="password" name="password" id="password" placeholder="Password" required>
-            <input type="text" name="department" id="department" placeholder="Department" required>
-            <input type="tel" name="phone" id="phone" placeholder="Phone Number" required>
-            <input type="text" name="address" id="address" placeholder="Address" required>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p id="error-message" style="color: red; display: none;"></p> <!-- Error message section -->
+         <h2>Create Account</h2>
+		 <form id="signup-form">
+			<input type="text" name="username" id="username" placeholder="Username" required>
+			<input type="email" name="email" id="email" placeholder="Email" required>
+			<input type="password" name="password" id="password" placeholder="Password" required>
+			<input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+			<input type="text" name="department" id="department" placeholder="Department" required>
+			<input type="tel" name="phone" id="phone" placeholder="Phone Number" required>
+			<input type="text" name="address" id="address" placeholder="Address" required>
+			<button type="submit">Sign Up</button>
+		</form>
+		<p id="error-message" style="color: red; display: none;"></p>
         <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
     <script>
@@ -29,9 +30,17 @@
         const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+		const confirmPassword = document.getElementById('confirm_password').value;
         const department = document.getElementById('department').value;
         const phone = document.getElementById('phone').value;
         const address = document.getElementById('address').value;
+				
+		// Check if passwords match
+		if (password !== confirmPassword) {
+			errorMessage.innerText = "Passwords do not match.";
+			errorMessage.style.display = 'block';
+			return;
+		}
 
         // AJAX request to send signup data
         fetch('../src/controllers/AuthController.php?action=signup', {

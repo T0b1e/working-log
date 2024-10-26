@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize page on load
+    window.onload = function() {
+        fetchUserData(); // Load initial data
+        fetchOptions(); // Populate dropdowns
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('detailModal').style.display = 'none';
+    };
+
     // Handle form submission for editing
     const editForm = document.getElementById('editForm');
     if (editForm) {
         editForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(editForm);
-            const messageId = document.getElementById('editMessageId').value;
-            
+
             fetch('utils/update_message.php', {
                 method: 'POST',
                 body: formData
@@ -14,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('แก้ไขข้อมูลสำเร็จ!'); 
-                    document.getElementById('editModal').style.display = 'none'; // Close modal on success
+                    alert('แก้ไขข้อมูลสำเร็จ!');
+                    document.getElementById('editModal').style.display = 'none';
                     fetchUserData();  // Refresh table data
                 } else {
                     alert('เกิดข้อผิดพลาดในการแก้ไข: ' + data.message);
@@ -40,20 +47,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     populateDropdown('priority', data.priorities);
                     populateDropdown('status', data.statuses);
+                    populateDropdown('title', data.titles);
                     populateDropdown('editPriority', data.priorities);
                     populateDropdown('editStatus', data.statuses);
-                    populateDropdown('title', data.titles);
-                    populateDropdown('editTitle', data.titles);
+                    populateDropdown('editTitle', data.titles); // Populate editTitle dropdown here
                 } else {
                     console.error('Failed to fetch options', data.error);
                 }
             })
             .catch(error => console.error('Error fetching options:', error));
     }
-
+	
     // Populate dropdown options
     function populateDropdown(dropdownId, options) {
         const dropdown = document.getElementById(dropdownId);
+        
+        if (!dropdown) {
+            return;
+        }
+
         dropdown.innerHTML = ''; // Clear existing options
 
         options.forEach(option => {
@@ -63,25 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.appendChild(optionElement);
         });
     }
+	
 
-    // Initialize on page load
-    window.onload = function() {
-        fetchUserData();  // Load initial data
-        fetchOptions();   // Populate dropdowns
-        document.getElementById('editModal').style.display = 'none';
-        document.getElementById('detailModal').style.display = 'none';
-    };
-
-    // Handle file upload form
+    // Handle file upload form submission
     const uploadForm = document.getElementById('uploadForm');
+	const fileInput = document.getElementById('fileToUpload');
+	const errorMessage = document.getElementById('error-message');
+    const clearUploadButton = document.getElementById('clearUploadButton');
+	const uploadProgress = document.getElementById('uploadProgress');
+
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(event) {
             event.preventDefault();
-            const fileInput = document.getElementById('fileToUpload');
-            const errorMessage = document.getElementById('error-message');
             errorMessage.innerText = '';  // Clear previous messages
 
-            // Validate file type
             if (fileInput.files.length > 0) {
                 const fileExtension = fileInput.files[0].name.split('.').pop().toLowerCase();
                 const forbiddenExtensions = ['exe', 'zip', 'apk'];
@@ -90,86 +97,108 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             }
+			
+			// Show progress bar
+            uploadProgress.style.display = 'block';
+            uploadProgress.value = 0;
 
             const formData = new FormData(uploadForm);
             if (fileInput.files.length > 0) {
                 formData.append('fileToUpload', fileInput.files[0]);
             }
 
-            fetch('utils/upload_handler.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('อัปโหลดข้อมูลสำเร็จ');
-                    fetchUserData();  // Refresh table
-                } else {
-                    errorMessage.innerText = 'การอัปโหลดล้มเหลว: ' + data.message;
+          // Create XMLHttpRequest to track upload progress
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'utils/upload_handler.php', true);
+
+            // Update progress bar
+            xhr.upload.onprogress = function(event) {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    uploadProgress.value = percentComplete;
                 }
-            })
-            .catch(error => {
-                errorMessage.innerText = 'การอัปโหลดล้มเหลว!';
-            });
+            };
+
+            // Handle response
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    if (data.success) {
+                        alert('อัปโหลดข้อมูลสำเร็จ');
+                        uploadForm.reset();  // Clear the form
+                        fetchUserData();  // Refresh table
+                    } else {
+                        errorMessage.innerText = 'การอัปโหลดล้มเหลว: ' + data.message;
+                    }
+                } else {
+                    errorMessage.innerText = 'การอัปโหลดล้มเหลว!';
+                }
+                uploadProgress.style.display = 'none'; // Hide progress bar after upload
+            };
+
+            xhr.onerror = function() {
+                errorMessage.innerText = 'เกิดข้อผิดพลาดในการอัปโหลด';
+                uploadProgress.style.display = 'none'; // Hide progress bar
+            };
+
+            // Send the request
+            xhr.send(formData);
         });
+		
+		const clearUploadButton = document.getElementById('clearUploadButton');
+        clearUploadButton.addEventListener('click', function() {
+            fileInput.value = '';  // Clear the file input
+            errorMessage.innerText = '';  // Clear any error messages
+        });
+		
     }
 
     // Fetch user data with optional pagination and search parameters
-	function fetchUserData(searchCriteria = '', searchTerm = '', page = 1, limit = 10) {
-		const userTableBody = document.querySelector('#userTable tbody');
-		const recordCountLabel = document.getElementById('recordCount');
+    function fetchUserData(searchCriteria = '', searchTerm = '', page = 1, limit = 10) {
+        const userTableBody = document.querySelector('#userTable tbody');
+        const recordCountLabel = document.getElementById('recordCount');
 
-		// Get the selected limit from the dropdown
-		const selectedLimit = document.getElementById('recordCountSelect').value;
-		limit = (selectedLimit === 'ทั้งหมด') ? 0 : parseInt(selectedLimit);
+        const selectedLimit = document.getElementById('recordCountSelect').value;
+        limit = (selectedLimit === 'ทั้งหมด') ? 0 : parseInt(selectedLimit);
 
-		// Calculate the starting index for the current page
-		const startingIndex = (page - 1) * limit;
+        const startingIndex = (page - 1) * limit;
 
-		// Debugging: Check calculated values
-		console.log("Selected limit:", selectedLimit);
-		console.log("Current page:", page);
-		console.log("Starting index for this page:", startingIndex);
+        userTableBody.innerHTML = '';  // Clear existing rows
+        const loadingMessage = document.createElement('tr');
+        loadingMessage.innerHTML = `<td colspan="11" style="text-align:center;">กำลังโหลด...</td>`;
+        userTableBody.appendChild(loadingMessage);
 
-		userTableBody.innerHTML = '';  // Clear existing rows
-		const loadingMessage = document.createElement('tr');
-		loadingMessage.innerHTML = `<td colspan="11" style="text-align:center;">กำลังโหลด...</td>`;
-		userTableBody.appendChild(loadingMessage);
-
-		fetch(`utils/fetch_users.php?criteria=${searchCriteria}&term=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`)
-			.then(response => response.json())
-			.then(data => {
-				userTableBody.innerHTML = '';  // Clear loading message
-				if (data.success) {
-					populateTable(data.data, startingIndex); // Pass startingIndex to populateTable
-					recordCountLabel.textContent = `จำนวนบันทึกทั้งสิ้น: ${data.totalRecords}`;
-					updatePagination(data.totalPages, page);
-				} else {
-					alert('ข้อผิดพลาด: ' + data.message);
-					recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
-				}
-			})
-			.catch(error => {
-				userTableBody.innerHTML = '';
-				const errorRow = document.createElement('tr');
-				errorRow.innerHTML = `<td colspan="11" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
-				userTableBody.appendChild(errorRow);
-				recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
-			});
-	}
-
+        fetch(`utils/fetch_users.php?criteria=${searchCriteria}&term=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                userTableBody.innerHTML = ''; // Clear loading message
+                if (data.success) {
+                    populateTable(data.data, startingIndex);
+                    recordCountLabel.textContent = `จำนวนบันทึกทั้งสิ้น: ${data.totalRecords}`;
+                    updatePagination(data.totalPages, page);
+                } else {
+                    alert('ข้อผิดพลาด: ' + data.message);
+                    recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
+                }
+            })
+            .catch(error => {
+                userTableBody.innerHTML = '';
+                const errorRow = document.createElement('tr');
+                errorRow.innerHTML = `<td colspan="11" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
+                userTableBody.appendChild(errorRow);
+                recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
+            });
+    }
 
     // Populate the user table with fetched data
-	function populateTable(data, startingIndex = 0) {
-		const userTableBody = document.querySelector('#userTable tbody');
-		userTableBody.innerHTML = '';  // Clear the table
+    function populateTable(data, startingIndex = 0) {
+        const userTableBody = document.querySelector('#userTable tbody');
+        userTableBody.innerHTML = ''; // Clear the table
 
-		data.forEach((user, index) => {
-			// Adjust index by adding startingIndex to reset for each page
-			userTableBody.appendChild(createUserRow(user, startingIndex + index + 1));
-		});
-	}
+        data.forEach((user, index) => {
+            userTableBody.appendChild(createUserRow(user, startingIndex + index + 1));
+        });
+    }
 
     // Create a table row for each user record
     function createUserRow(user, index) {
@@ -178,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const uploadTime = user.created_at ? new Date(user.created_at).toLocaleTimeString() : 'ไม่พบเจอ';
 
         row.innerHTML = `
-            <td>${index}</td> <!-- Display calculated index -->
+            <td>${index}</td>
             <td>${uploadDate}</td>
             <td>${uploadTime}</td>
             <td>${user.username}</td>
@@ -227,29 +256,23 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching message details:', error));
     }
 
-    // Display the message details in a modal
-    function displayDetailsModal(message) {
-        const modalDetails = document.getElementById('modalDetails');
-        const fileLink = message.file_name ? `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` : 'ไม่มีไฟล์';
-
-        modalDetails.innerHTML = `
-            <p>หัวข้อ: ${message.title}</p>
-            <p>รายละเอียด: ${message.description}</p>
-            <p>สถานะ: ${message.status}</p>
-            <p>ไฟล์: ${fileLink}</p>
-        `;
-        
-        document.getElementById('detailModal').style.display = 'block';
-    }
-
-    // Populate the edit modal with message data
+    // Populate Edit Modal with fetched message data
+// Populate Edit Modal with fetched message data and set selected values
     function populateEditModal(message) {
-        document.getElementById('editTitle').value = message.title;
-        document.getElementById('editDescription').value = message.description;
-        document.getElementById('editPriority').value = message.priority;
-        document.getElementById('editStatus').value = message.status;
-        document.getElementById('editMessageId').value = message.message_id;
+        // Set dropdown values based on message data
+        const editTitle = document.getElementById('editTitle');
+        const editPriority = document.getElementById('editPriority');
+        const editStatus = document.getElementById('editStatus');
 
+        editTitle.value = message.title || '';
+        editPriority.value = message.priority || '';
+        editStatus.value = message.status || '';
+
+        // Populate other fields
+        document.getElementById('editDescription').value = message.description || '';
+        document.getElementById('editMessageId').value = message.message_id || '';
+
+        // Show current file information if available
         const currentFileSection = document.getElementById('currentFileSection');
         if (message.file_name) {
             document.getElementById('currentFileName').textContent = message.file_name;
@@ -257,6 +280,27 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             currentFileSection.style.display = 'none';
         }
+
+        document.getElementById('editModal').style.display = 'block'; // Display modal
+    }
+
+    // Display the message details in a modal
+    function displayDetailsModal(message) {
+        const modalDetails = document.getElementById('modalDetails');
+        const fileLink = message.file_name 
+            ? `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` 
+            : 'ไม่มีไฟล์';
+
+        modalDetails.innerHTML = `
+            <p><strong>หัวข้อ:</strong> ${message.title}</p>
+            <p><strong>รายละเอียด:</strong> ${message.description}</p>
+            <p><strong>สถานะ:</strong> ${message.status}</p>
+            <p><strong>แผนก:</strong> ${message.department || 'ไม่พบเจอ'}</p>
+            <p><strong>ลำดับความสำคัญ:</strong> ${message.priority || 'ไม่พบเจอ'}</p>
+            <p><strong>ความคิดเห็น:</strong> ${message.comments || 'ไม่มีความคิดเห็นเพิ่มเติม'}</p>
+            <p><strong>ไฟล์แนบ:</strong> ${fileLink}</p>
+        `;
+        document.getElementById('detailModal').style.display = 'block';
     }
 
     // Handle delete action for a message
@@ -267,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.success) {
                         alert('ลบข้อมูลสำเร็จ');
-                        fetchUserData(); // Refresh table after deletion
+                        fetchUserData();
                     } else {
                         alert('ลบข้อมูลล้มเหลว: ' + data.message);
                     }
@@ -300,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update data display based on selected record count
     document.getElementById('recordCountSelect').addEventListener('change', function() {
-        fetchUserData(); // Re-fetch with new limit
+        fetchUserData();
     });
 
     // Close modals

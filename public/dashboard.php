@@ -1,3 +1,4 @@
+<?php
 session_start();
 require_once '../src/models/User.php'; // Include User model
 
@@ -36,11 +37,24 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
             width: 100% !important;
         }
         <?php endif; ?>
+		
+		 .navbar-center {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-title"><a href="dashboard.php">📋 ระบบบันทึกปฏิบัติงาน</a></div>
+		
+		<div class="navbar-center">
+           ผู้ใช้: <?php echo htmlspecialchars($username); ?>
+        </div>
+		
         <ul>
             <?php if ($user_role === 'admin'): ?>
                 <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>
@@ -76,33 +90,34 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
                 <span id="recordCount" class="record-count-label">📊 จำนวนบันทึกทั้งสิ้น: 0</span>
             </div>
 
-            <table id="userTable">
-                <thead>
-                    <tr>
-                        <th>📅 วันที่</th>
-                        <th>⏰ เวลา</th>
-                        <th class="username-column">👤 ชื่อผู้ใช้</th>
-                        <th class="title-column">📝 หัวข้อ</th>
-                        <th class="description-column">📄 รายละเอียด</th>
-                        <th>⚙️ สถานะ</th>
-                        <th>📎 เอกสาร</th>
-                        <th>📄 รายละเอียดเพิ่มเติม</th>
-                        <th>✏️ แก้ไข</th>
-                        <th>🗑️ ลบ</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+			<table id="userTable">
+				<thead>
+					<tr>
+						<th>#</th> <!-- New index column -->
+						<th>📅 วันที่</th>
+						<th>⏰ เวลา</th>
+						<th class="username-column">👤 ชื่อผู้ใช้</th>
+						<th class="title-column">📝 หัวข้อ</th>
+						<th class="description-column">📄 รายละเอียด</th>
+						<th>⚙️ สถานะ</th>
+						<th class="document-column">📎 เอกสาร</th>
+						<th>📄 รายละเอียดเพิ่มเติม</th>
+						<th>✏️ แก้ไข</th>
+						<th>🗑️ ลบ</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
         
-            <div class="recordCountSelect-class" style="margin-top: 20px;">
-                <label for="recordCountSelect">📊 จำนวนรายการที่จะแสดง:</label>
-                <select id="recordCountSelect">
-                    <option value="10">10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="ทั้งหมด">ทั้งหมด</option>
-                </select>
-            </div>
+			<div class="recordCountSelect-class" style="margin-top: 20px;">
+				<label for="recordCountSelect">📊 จำนวนรายการที่จะแสดง:</label>
+				<select id="recordCountSelect">
+					<option value="10" selected>10</option> <!-- Set default to 10 -->
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="ทั้งหมด">ทั้งหมด</option>
+				</select>
+			</div>
 
             <div id="pagination-container" class="pagination" style="margin-top: 20px;"></div>
         </div>
@@ -136,8 +151,12 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
 
                     <label for="fileToUpload">📎 อัปโหลดไฟล์ (ถ้ามี)</label>
                     <input type="file" id="fileToUpload" name="fileToUpload">
-
+					
+					<progress id="uploadProgress" class="styled-progress" value="0" max="100" style="display: none; width: 100%;"></progress>
+					
                     <button type="submit">📤 ส่งข้อมูล</button>
+					<button type="button" id="clearUploadButton" style="margin-top: 10px">❌ ลบไฟล์</button>
+
                 </form>
                 <div id="error-message" style="color:red;"></div>
                 <div id="fileList"></div>
