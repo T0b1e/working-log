@@ -1,50 +1,49 @@
 document.addEventListener('DOMContentLoaded', () => {
-
+    // Handle form submission for editing
     const editForm = document.getElementById('editForm');
     if (editForm) {
         editForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission behavior
+            event.preventDefault();
+            const formData = new FormData(editForm);
+            const messageId = document.getElementById('editMessageId').value;
             
-            const formData = new FormData(editForm); // Collect form data
-            const messageId = document.getElementById('editMessageId').value; // Get the message ID to edit
-            
-            fetch(`utils/update_message.php`, {  // Send data to your PHP handler
+            fetch('utils/update_message.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('แก้ไขข้อมูลสำเร็จ!');  // Show success message
-                    document.getElementById('editModal').style.display = 'none'; // Close the modal
-                    fetchUserData();  // Refresh the table data after editing
+                    alert('แก้ไขข้อมูลสำเร็จ!'); 
+                    document.getElementById('editModal').style.display = 'none'; // Close modal on success
+                    fetchUserData();  // Refresh table data
                 } else {
-                    alert('เกิดข้อผิดพลาดในการแก้ไข: ' + data.message);  // Show error message if update fails
+                    alert('เกิดข้อผิดพลาดในการแก้ไข: ' + data.message);
                 }
             })
             .catch(error => console.error('Error editing message:', error));
         });
     }
 
+    // Clear search inputs and reset criteria
     document.getElementById('clearSearchButton').addEventListener('click', function() {
-        // Clear search inputs
         document.getElementById('searchTerm').value = '';
-        document.getElementById('searchCriteria').value = 'username'; // Reset to default criteria
-        fetchUserData(); // This will load data without search filters
+        document.getElementById('searchCriteria').value = 'username';
+        fetchUserData(); // Reload data without search filters
     });
 
-    // Function to fetch priorities, statuses, and titles dynamically
+    // Fetch and populate dropdown options dynamically
     function fetchOptions() {
         fetch('utils/manage_tag.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    populateDropdown('priority', data.priorities);  // Populate form priority
-                    populateDropdown('status', data.statuses);      // Populate form status
-                    populateDropdown('editPriority', data.priorities); // Populate edit modal priority
-                    populateDropdown('editStatus', data.statuses);     // Populate edit modal status
-                    populateDropdown('title', data.titles);         // Populate form title
-                    populateDropdown('editTitle', data.titles);     // Populate edit modal title
+                    populateDropdown('priority', data.priorities);
+                    populateDropdown('status', data.statuses);
+                    populateDropdown('editPriority', data.priorities);
+                    populateDropdown('editStatus', data.statuses);
+                    populateDropdown('title', data.titles);
+                    populateDropdown('editTitle', data.titles);
                 } else {
                     console.error('Failed to fetch options', data.error);
                 }
@@ -52,53 +51,46 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching options:', error));
     }
 
-    // Helper function to populate dropdowns
+    // Populate dropdown options
     function populateDropdown(dropdownId, options) {
         const dropdown = document.getElementById(dropdownId);
         dropdown.innerHTML = ''; // Clear existing options
 
         options.forEach(option => {
             const optionElement = document.createElement('option');
-            optionElement.value = option.name; // Assuming options have a 'name' field
+            optionElement.value = option.name;
             optionElement.textContent = option.name;
             dropdown.appendChild(optionElement);
         });
     }
 
-
-    // Call fetchOptions on page load to populate dropdowns
+    // Initialize on page load
     window.onload = function() {
-        fetchUserData();
-        fetchOptions();  // Fetch and populate Priority and Status dropdowns
+        fetchUserData();  // Load initial data
+        fetchOptions();   // Populate dropdowns
         document.getElementById('editModal').style.display = 'none';
         document.getElementById('detailModal').style.display = 'none';
     };
 
+    // Handle file upload form
     const uploadForm = document.getElementById('uploadForm');
-
     if (uploadForm) {
-        uploadForm.addEventListener('submit', function (event) {
+        uploadForm.addEventListener('submit', function(event) {
             event.preventDefault();
-
             const fileInput = document.getElementById('fileToUpload');
             const errorMessage = document.getElementById('error-message');
-            errorMessage.innerText = '';  // Clear previous error messages
+            errorMessage.innerText = '';  // Clear previous messages
 
+            // Validate file type
             if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const fileName = file.name;
-                const fileExtension = fileName.split('.').pop().toLowerCase();
-
-                // Check for forbidden file extensions
+                const fileExtension = fileInput.files[0].name.split('.').pop().toLowerCase();
                 const forbiddenExtensions = ['exe', 'zip', 'apk'];
-
                 if (forbiddenExtensions.includes(fileExtension)) {
                     errorMessage.innerText = 'ไม่อนุญาตให้อัปโหลดไฟล์ประเภท .exe, .zip, หรือ .apk';
                     return;
                 }
             }
 
-            // If file validation passes, proceed with the form submission
             const formData = new FormData(uploadForm);
             if (fileInput.files.length > 0) {
                 formData.append('fileToUpload', fileInput.files[0]);
@@ -112,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     alert('อัปโหลดข้อมูลสำเร็จ');
-                    fetchUserData();  // Refresh the user table after successful upload
+                    fetchUserData();  // Refresh table
                 } else {
                     errorMessage.innerText = 'การอัปโหลดล้มเหลว: ' + data.message;
                 }
@@ -123,74 +115,77 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let cachedUserData = null; // Cache variable
+    // Fetch user data with optional pagination and search parameters
+	function fetchUserData(searchCriteria = '', searchTerm = '', page = 1, limit = 10) {
+		const userTableBody = document.querySelector('#userTable tbody');
+		const recordCountLabel = document.getElementById('recordCount');
 
-    function fetchUserData(searchCriteria = '', searchTerm = '', page = 1, limit = 10) {
-        const userTableBody = document.querySelector('#userTable tbody');
-        const recordCountLabel = document.getElementById('recordCount');
-        let totalRecords = 0;
+		// Get the selected limit from the dropdown
+		const selectedLimit = document.getElementById('recordCountSelect').value;
+		limit = (selectedLimit === 'ทั้งหมด') ? 0 : parseInt(selectedLimit);
 
-        userTableBody.innerHTML = '';  // Clear existing rows
-        const loadingMessage = document.createElement('tr');
-        loadingMessage.innerHTML = `<td colspan="8" style="text-align:center;">กำลังโหลด...</td>`;
-        userTableBody.appendChild(loadingMessage);
+		// Calculate the starting index for the current page
+		const startingIndex = (page - 1) * limit;
 
-        const selectedLimit = document.getElementById('recordCountSelect').value;
-        limit = (selectedLimit === 'ทั้งหมด') ? 0 : parseInt(selectedLimit);
+		// Debugging: Check calculated values
+		console.log("Selected limit:", selectedLimit);
+		console.log("Current page:", page);
+		console.log("Starting index for this page:", startingIndex);
 
-        fetch(`utils/fetch_users.php?criteria=${searchCriteria}&term=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                console.log(data)
-                userTableBody.innerHTML = '';  // Clear loading message
-                if (data.success) {
-                    if (!searchCriteria && !searchTerm) {
-                        cachedUserData = data; // Cache data
-                    }
-                    populateTable(data.data);
-                    totalRecords = data.data.length;
-                    recordCountLabel.textContent = `จำนวนบันทึกทั้งสิ้น: ${totalRecords}`;
-                    updatePagination(data.totalPages, page);
-                } else {
-                    alert('ข้อผิดพลาด: ' + data.message);
-                    recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
-                }
-            })
-            .catch(error => {
-                userTableBody.innerHTML = '';
-                const errorRow = document.createElement('tr');
-                errorRow.innerHTML = `<td colspan="8" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
-                userTableBody.appendChild(errorRow);
-                recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
-            });
-    }
+		userTableBody.innerHTML = '';  // Clear existing rows
+		const loadingMessage = document.createElement('tr');
+		loadingMessage.innerHTML = `<td colspan="11" style="text-align:center;">กำลังโหลด...</td>`;
+		userTableBody.appendChild(loadingMessage);
 
-    function populateTable(data) {
-        const userTableBody = document.querySelector('#userTable tbody');
-        userTableBody.innerHTML = '';  // Clear the table
+		fetch(`utils/fetch_users.php?criteria=${searchCriteria}&term=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`)
+			.then(response => response.json())
+			.then(data => {
+				userTableBody.innerHTML = '';  // Clear loading message
+				if (data.success) {
+					populateTable(data.data, startingIndex); // Pass startingIndex to populateTable
+					recordCountLabel.textContent = `จำนวนบันทึกทั้งสิ้น: ${data.totalRecords}`;
+					updatePagination(data.totalPages, page);
+				} else {
+					alert('ข้อผิดพลาด: ' + data.message);
+					recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
+				}
+			})
+			.catch(error => {
+				userTableBody.innerHTML = '';
+				const errorRow = document.createElement('tr');
+				errorRow.innerHTML = `<td colspan="11" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
+				userTableBody.appendChild(errorRow);
+				recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
+			});
+	}
 
-        data.forEach(user => {
-            userTableBody.appendChild(createUserRow(user));
-        });
-    }
 
-    function createUserRow(user) {
+    // Populate the user table with fetched data
+	function populateTable(data, startingIndex = 0) {
+		const userTableBody = document.querySelector('#userTable tbody');
+		userTableBody.innerHTML = '';  // Clear the table
+
+		data.forEach((user, index) => {
+			// Adjust index by adding startingIndex to reset for each page
+			userTableBody.appendChild(createUserRow(user, startingIndex + index + 1));
+		});
+	}
+
+    // Create a table row for each user record
+    function createUserRow(user, index) {
         const row = document.createElement('tr');
         const uploadDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'ไม่พบเจอ';
         const uploadTime = user.created_at ? new Date(user.created_at).toLocaleTimeString() : 'ไม่พบเจอ';
-        const fileLink = user.file_name;
 
         row.innerHTML = `
+            <td>${index}</td> <!-- Display calculated index -->
             <td>${uploadDate}</td>
             <td>${uploadTime}</td>
             <td>${user.username}</td>
             <td>${user.title || 'ไม่พบเจอ'}</td>
             <td>${user.description || 'ไม่พบเจอ'}</td>
             <td>${user.status || 'ไม่พบเจอ'}</td>
-            <td>${fileLink}</td>
+            <td>${user.file_name || ''}</td>
             <td><button class="detail-btn" data-id="${user.message_id}"><i class="fas fa-info-circle"></i></button></td> 
             <td><button class="edit-btn" data-id="${user.message_id}"><i class="fas fa-edit"></i></button></td>
             <td><button class="delete-btn" data-id="${user.message_id}"><i class="fas fa-trash-alt"></i></button></td>
@@ -198,32 +193,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return row;
     }
 
-    // Use Event Delegation to handle dynamic elements like edit, detail, delete buttons
+    // Handle clicks for dynamic elements in the user table
     document.querySelector('#userTable').addEventListener('click', function (event) {
-        const target = event.target.closest('button');  // Find the closest button
-    
-        if (!target || !target.dataset.id) return;  // Ensure the target is a button with dataset
-    
+        const target = event.target.closest('button');
+        if (!target || !target.dataset.id) return;
         const messageId = target.dataset.id;
-    
-        // Handle Detail
+
         if (target.classList.contains('detail-btn')) {
             fetchMessageAndDisplayModal(messageId, 'detail');
-        }
-    
-        // Handle Edit
-        if (target.classList.contains('edit-btn')) {
+        } else if (target.classList.contains('edit-btn')) {
             fetchMessageAndDisplayModal(messageId, 'edit');
-        }
-    
-        // Handle Delete
-        if (target.classList.contains('delete-btn')) {
+        } else if (target.classList.contains('delete-btn')) {
             handleDelete(messageId);
         }
     });
-    
 
-    // Handle message fetching and modal display for both detail and edit
+    // Fetch message details and display in the appropriate modal
     function fetchMessageAndDisplayModal(messageId, mode) {
         fetch(`utils/fetch_message.php?id=${messageId}`)
             .then(response => response.json())
@@ -239,14 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('ข้อผิดพลาด: ไม่สามารถดึงข้อมูลได้');
                 }
             })
-            .catch(error => console.error('ข้อผิดพลาดระหว่างการดึงข้อมูล:', error));
+            .catch(error => console.error('Error fetching message details:', error));
     }
 
+    // Display the message details in a modal
     function displayDetailsModal(message) {
         const modalDetails = document.getElementById('modalDetails');
-        const fileLink = message.file_name ? 
-            `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` 
-            : 'ไม่มีไฟล์';
+        const fileLink = message.file_name ? `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` : 'ไม่มีไฟล์';
 
         modalDetails.innerHTML = `
             <p>หัวข้อ: ${message.title}</p>
@@ -258,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('detailModal').style.display = 'block';
     }
 
-    // Define the populateEditModal function
+    // Populate the edit modal with message data
     function populateEditModal(message) {
         document.getElementById('editTitle').value = message.title;
         document.getElementById('editDescription').value = message.description;
@@ -266,15 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editStatus').value = message.status;
         document.getElementById('editMessageId').value = message.message_id;
 
+        const currentFileSection = document.getElementById('currentFileSection');
         if (message.file_name) {
             document.getElementById('currentFileName').textContent = message.file_name;
-            document.getElementById('currentFileSection').style.display = 'block';
+            currentFileSection.style.display = 'block';
         } else {
-            document.getElementById('currentFileSection').style.display = 'none';
+            currentFileSection.style.display = 'none';
         }
     }
 
-    // Handle Delete
+    // Handle delete action for a message
     function handleDelete(messageId) {
         if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?')) {
             fetch(`utils/delete_message.php?id=${messageId}`, { method: 'POST' })
@@ -282,15 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.success) {
                         alert('ลบข้อมูลสำเร็จ');
-                        fetchUserData();
+                        fetchUserData(); // Refresh table after deletion
                     } else {
                         alert('ลบข้อมูลล้มเหลว: ' + data.message);
                     }
                 })
-                .catch(error => console.error('ข้อผิดพลาดระหว่างการลบข้อมูล:', error));
+                .catch(error => console.error('Error deleting message:', error));
         }
     }
 
+    // Update pagination buttons based on total pages and current page
     function updatePagination(totalPages, currentPage) {
         const paginationContainer = document.getElementById('pagination-container');
         paginationContainer.innerHTML = '';
@@ -299,29 +285,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const pageButton = document.createElement('button');
             pageButton.textContent = page;
             pageButton.classList.add('pagination-button');
-            if (page === currentPage) {
-                pageButton.classList.add('active');
-            }
+            if (page === currentPage) pageButton.classList.add('active');
             pageButton.addEventListener('click', () => fetchUserData('', '', page));
             paginationContainer.appendChild(pageButton);
         }
     }
 
+    // Trigger data fetch on search
     document.getElementById('searchButton').addEventListener('click', function() {
         const searchCriteria = document.getElementById('searchCriteria').value;
         const searchTerm = document.getElementById('searchTerm').value;
         fetchUserData(searchCriteria, searchTerm);
     });
 
+    // Update data display based on selected record count
     document.getElementById('recordCountSelect').addEventListener('change', function() {
-        fetchUserData();
+        fetchUserData(); // Re-fetch with new limit
     });
 
     // Close modals
-    document.getElementById('closeDetailModal').addEventListener('click', function () {
+    document.getElementById('closeDetailModal').addEventListener('click', function() {
         document.getElementById('detailModal').style.display = 'none';
     });
-
     document.getElementById('closeModal').addEventListener('click', function() {
         document.getElementById('editModal').style.display = 'none';
         document.getElementById('editForm').reset();

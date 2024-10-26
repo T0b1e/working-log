@@ -1,12 +1,19 @@
-<?php
 session_start();
+require_once '../src/models/User.php'; // Include User model
 
+// Check authentication
 if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
     header('Location: login.php');
     exit();
 }
 
 $user_role = $_COOKIE['role'];
+$user_id = $_COOKIE['user_id'];
+
+// Fetch username from database using user_id
+$user = new User();
+$userData = $user->readById($user_id);
+$username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default to 'ผู้ใช้งาน' if username not found
 ?>
 
 <!DOCTYPE html>
