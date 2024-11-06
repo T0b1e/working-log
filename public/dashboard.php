@@ -16,18 +16,25 @@ $user = new User();
 $userData = $user->readById($user_id);
 $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default to 'ผู้ใช้งาน' if username not found
 ?>
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📋 ระบบบันทึกปฏิบัติงาน</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- CSS Files -->
     <link rel="stylesheet" href="./css/globals.css">
     <link rel="stylesheet" href="./css/navbars.css">
     <link rel="stylesheet" href="./css/forms.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Inline Styles for Conditional Display -->
     <style>
         <?php if ($user_role === 'admin'): ?>
         .right-side {
@@ -37,8 +44,8 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
             width: 100% !important;
         }
         <?php endif; ?>
-		
-		 .navbar-center {
+
+        .navbar-center {
             flex-grow: 1;
             display: flex;
             justify-content: center;
@@ -48,171 +55,236 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
     </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-title"><a href="dashboard.php">📋 ระบบบันทึกปฏิบัติงาน</a></div>
-		
-		<div class="navbar-center">
-           ผู้ใช้: <?php echo htmlspecialchars($username); ?>
+
+        <div class="navbar-center">
+            ผู้ใช้: <?php echo htmlspecialchars($username); ?>
         </div>
-		
+
         <ul>
             <?php if ($user_role === 'admin'): ?>
                 <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>
-            <?php endif; ?>
-            
-            <?php  if ($user_role === 'admin'): ?>
-                <!-- <li><a href="view.php">dashboard</a></li> -->
+			    <li><a href="view.php">📊 รายงาน</a></li>
             <?php endif; ?>
             <li><a href="settings.php">⚙️ การตั้งค่าผู้ใช้</a></li>
             <li><a href="logout.php">🚪 ออกจากระบบ</a></li>
         </ul>
     </nav>
 
+    <!-- Main Content Container -->
     <div class="split-container">
+        <!-- Left Side: Search Filters and Data Table -->
         <div class="left-side">
 
-        <div class="search-filter-container">
-            <label for="searchCriteria">🔍 ค้นหาตาม:</label>
-            <select id="searchCriteria">
-                <option value="username">ผู้ส่ง</option>
-                <option value="title">หัวข้อ</option>
-                <option value="priority">ลำดับความสำคัญ</option>
-                <option value="status">สถานะ</option>
-                <option value="created_at">วันที่</option>
-                <option value="file_name">ชื่อเอกสาร</option>
-            </select>
-            <input type="text" id="searchTerm" placeholder="กรอกข้อมูลค้นหา...">
-            <button id="clearSearchButton">❌ ล้างการค้นหา</button> <!-- Clear search button -->
-            <button id="searchButton">🔎 ค้นหา</button>
-        </div>
+            <!-- Search Filters -->
+            <div class="search-filter-container">
+                <div class="search-row">
+                    <!-- Search Criteria -->
+                    <div class="search-group">
+                        <label for="searchCriteria">🔍 ค้นหาตาม:</label>
+                        <select id="searchCriteria">
+                            <option value="username">ผู้ส่ง</option>
+                            <option value="title">หัวข้อ</option>
+                            <option value="priority">ลำดับความสำคัญ</option>
+                            <option value="status">สถานะ</option>
+                            <option value="file_name">ชื่อเอกสาร</option>
+                        </select>
+                    </div>
 
+                    <!-- Search Term -->
+                    <div class="search-group">
+                        <label for="searchTerm">กรอกข้อมูล:</label>
+                        <input type="text" id="searchTerm" placeholder="กรอกข้อมูลค้นหา...">
+                    </div>
+                </div>
+                <div class="search-buttons">
+                    <button id="clearSearchButton">❌ ล้างการค้นหา</button>
+                    <button id="searchButton">🔎 ค้นหา</button>
+                </div>
+            </div>
+
+            <!-- Record Count Display -->
             <div class="record-count-container">
                 <span id="recordCount" class="record-count-label">📊 จำนวนบันทึกทั้งสิ้น: 0</span>
             </div>
 
-			<table id="userTable">
-				<thead>
-					<tr>
-						<th>#</th> <!-- New index column -->
-						<th>📅 วันที่</th>
-						<th>⏰ เวลา</th>
-						<th class="username-column">👤 ชื่อผู้ใช้</th>
-						<th class="title-column">📝 หัวข้อ</th>
-						<th class="description-column">📄 รายละเอียด</th>
-						<th>⚙️ สถานะ</th>
-						<th class="document-column">📎 เอกสาร</th>
-						<th>📄 รายละเอียดเพิ่มเติม</th>
-						<th>✏️ แก้ไข</th>
-						<th>🗑️ ลบ</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-        
-			<div class="recordCountSelect-class" style="margin-top: 20px;">
-				<label for="recordCountSelect">📊 จำนวนรายการที่จะแสดง:</label>
-				<select id="recordCountSelect">
-					<option value="10" selected>10</option> <!-- Set default to 10 -->
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="ทั้งหมด">ทั้งหมด</option>
-				</select>
-			</div>
+            <!-- Data Table -->
+            <div class="table-container">
+                <table id="userTable">
+                    <thead>
+                        <tr>
+                            <th>#</th> <!-- Index Column -->
+                            <th>เวลา</th>
+							<th>วันที่จัดทำ</th>
+                            <th>วันที่สิ้นสุด</th>
+                            <th class="username-column">ชื่อผู้ใช้</th>
+                            <th class="title-column">หัวข้อ</th>
+                            <th class="description-column">รายละเอียด</th>
+                            <th>สถานะ</th>
+                            <th class="document-column">เอกสาร</th>
+                            <th class="action-column">ดูข้อมูล</th>
+                            <th class="action-column">แก้ไข</th>
+                            <th class="action-column">ลบ</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-            <div id="pagination-container" class="pagination" style="margin-top: 20px;"></div>
+            <!-- Record Count Selection -->
+            <div class="recordCountSelect-class">
+                <label for="recordCountSelect">📊 จำนวนรายการที่จะแสดง:</label>
+                <select id="recordCountSelect">
+                    <option value="10" selected>10</option> <!-- Default to 10 -->
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="ทั้งหมด">ทั้งหมด</option>
+                </select>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination-container" class="pagination"></div>
         </div>
 
+        <!-- Right Side: Upload Form (Hidden for Admin) -->
         <?php if ($user_role !== 'admin'): ?>
         <div class="right-side">
             <div class="form-container">
                 <h2>📝 แบบบันทึกการปฏิบัติงาน</h2>
                 <form id="uploadForm" enctype="multipart/form-data">
 
+
+                    <!-- Title Selection -->
                     <label for="title">📄 หัวข้อ</label>
                     <select id="title" name="title" required>
-                        <!-- Dynamic title options will be inserted here by JS -->
+                        <!-- Dynamic options inserted via JavaScript -->
+                    </select>
+					
+					 <!-- Date Fields -->
+                    <div class="date-fields">
+                        <div class="form-group">
+                            <label for="start_date">📅 วันที่จัดทำ</label>
+                            <input type="date" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">📅 วันที่สิ้นสุด</label>
+                            <input type="date" id="end_date" name="end_date">
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <label for="description">📄 รายละเอียด</label>
+                    <textarea id="description" name="description"></textarea>
+
+                    <!-- Priority Selection -->
+                    <label for="priority">⚡ ลำดับความสำคัญ</label>
+                    <select id="priority" name="priority" required>
+                        <!-- Dynamic options inserted via JavaScript -->
                     </select>
 
-                    <label for="description">📄 รายละเอียด</label>
-                    <textarea id="description" name="description" required></textarea>
-
-                    <label for="priority">⚡ ลำดับความสำคัญ</label>
-                        <select id="priority" name="priority" required>
-                            <!-- dynamic -->
-                        </select>
-
+                    <!-- Status Selection -->
                     <label for="status">⚙️ สถานะ</label>
-                        <select id="status" name="status" required>
-                            <!-- dynamic -->
-                        </select>
+                    <select id="status" name="status" required>
+                        <!-- Dynamic options inserted via JavaScript -->
+                    </select>
 
+                    <!-- Additional Comments -->
                     <label for="body">💬 ความคิดเห็นเพิ่มเติม</label>
                     <textarea id="body" name="body"></textarea>
 
+                    <!-- File Upload -->
                     <label for="fileToUpload">📎 อัปโหลดไฟล์ (ถ้ามี)</label>
                     <input type="file" id="fileToUpload" name="fileToUpload">
-					
-					<progress id="uploadProgress" class="styled-progress" value="0" max="100" style="display: none; width: 100%;"></progress>
-					
+
+                    <!-- Progress Bar -->
+                    <progress id="uploadProgress" class="styled-progress" value="0" max="100" style="display: none;"></progress>
+
+                    <!-- Submit and Clear Buttons -->
                     <button type="submit">📤 ส่งข้อมูล</button>
-					<button type="button" id="clearUploadButton" style="margin-top: 10px">❌ ลบไฟล์</button>
+                    <button type="button" id="clearUploadButton" style="margin-top: 10px">❌ ลบไฟล์</button>
 
                 </form>
-                <div id="error-message" style="color:red;"></div>
+                <div id="error-message" class="error-message"></div>
                 <div id="fileList"></div>
             </div>
         </div>
         <?php endif; ?>
     </div>
 
-     <!-- Modal for displaying row details -->
-     <div id="detailModal" class="modal">
+    <!-- Modal for Displaying Details -->
+    <div id="detailModal" class="modal" role="dialog" aria-labelledby="detailModalTitle" aria-modal="true">
         <div class="modal-content">
-            <span id="closeDetailModal" class="close-btn">&times;</span>
-            <h2>📄 รายละเอียด</h2>
-            <div id="modalDetails"></div>
+            <span id="closeDetailModal" class="close-btn" aria-label="Close Modal">&times;</span>
+            <h2 id="detailModalTitle">📄 รายละเอียด</h2>
+            <div id="modalDetails">
+                <!-- Modal Content Here -->
+            </div>
         </div>
     </div>
-    
-    <div id="editModal" class="modal">
+
+    <!-- Modal for Editing a Message -->
+    <div id="editModal" class="modal" role="dialog" aria-labelledby="editModalTitle" aria-modal="true">
         <div class="modal-content">
-            <span id="closeModal" class="close-btn">&times;</span>
-            <h2>✏️ แก้ไขข้อมูล</h2>
+            <span id="closeModal" class="close-btn" aria-label="Close Modal">&times;</span>
+            <h2 id="editModalTitle">✏️ แก้ไขข้อมูล</h2>
             <form id="editForm">
+                <!-- Title Selection -->
                 <label for="editTitle">📄 หัวข้อ</label>
-                <select id="editTitle" name="title">
-                    <!-- Dynamic title options will be inserted here by JS -->
+                <select id="editTitle" name="title" required>
+                    <!-- Dynamic options inserted via JavaScript -->
                 </select>
+
+                <!-- Description -->
                 <label for="editDescription">📄 รายละเอียด</label>
-                <textarea id="editDescription" name="description"></textarea>
+                <textarea id="editDescription" name="description" required></textarea>
+
+                <!-- Date Fields -->
+                <div class="date-fields">
+                    <div class="form-group">
+                        <label for="editStartDate">📅 วันที่จัดทำ</label>
+                        <input type="date" id="editStartDate" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndDate">📅 วันที่สิ้นสุด</label>
+                        <input type="date" id="editEndDate" name="end_date" required>
+                    </div>
+                </div>
+
+                <!-- Priority Selection -->
                 <label for="editPriority">⚡ ลำดับความสำคัญ</label>
-                <select id="editPriority" name="priority">
-                    <option value="low">ด่วนที่สุด</option>
-                    <option value="medium">ด่วน</option>
-                    <option value="high">ปกติ</option>
+                <select id="editPriority" name="priority" required>
+                    <!-- Dynamic options inserted via JavaScript -->
                 </select>
+
+                <!-- Status Selection -->
                 <label for="editStatus">⚙️ สถานะ</label>
                 <select id="editStatus" name="status" required>
-                    <option value="ดำเนินการแล้วเสร็จ">ดำเนินการแล้วเสร็จ</option>
-                    <option value="ดำเนินการ">ดำเนินการ</option>
-                    <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                    <!-- Dynamic options inserted via JavaScript -->
                 </select>
+
+                <!-- Hidden Field for Message ID -->
                 <input type="hidden" id="editMessageId" name="message_id">
-                <button type="submit">💾 บันทึกการแก้ไข</button>
+
+                <!-- Current File Section -->
                 <div id="currentFileSection">
                     <div class="currentFileSelectionLabel">
                         <label>📁 ไฟล์ปัจจุบัน:</label>
                         <span id="currentFileName"></span>
                     </div>
-                    <button id="deleteFileBtn">🗑️ ลบไฟล์</button>
+                    <button type="button" id="deleteFileBtn">🗑️ ลบไฟล์</button>
                     <label for="newFileUpload">📎 อัปโหลดไฟล์ใหม่:</label>
                     <input type="file" id="newFileUpload" name="fileToUpload">
                 </div>
+
+                <!-- Submit Button -->
+                <button type="submit">💾 บันทึกการแก้ไข</button>
             </form>
         </div>
     </div>
 
+    <!-- JavaScript File -->
     <script src="main.js"></script>
-    
 </body>
 </html>

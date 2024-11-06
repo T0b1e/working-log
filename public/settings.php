@@ -1,26 +1,20 @@
 <?php
-// Start session if not already active
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+require_once '../src/models/User.php'; // Include User model
 
-// Redirect if not authenticated
-if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['user_id'])) {
+// Check authentication
+if (!isset($_COOKIE['authToken']) || !isset($_COOKIE['role'])) {
     header('Location: login.php');
     exit();
 }
 
-require_once '../src/models/User.php';
-
-// Fetch user data from the database
+$user_role = $_COOKIE['role'];
 $user_id = $_COOKIE['user_id'];
+
+// Fetch username from database using user_id
 $user = new User();
 $userData = $user->readById($user_id);
-
-if (!$userData) {
-    echo "ไม่พบผู้ใช้.";
-    exit();
-}
+$username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default to 'ผู้ใช้งาน' if username not found
 ?>
 
 <!DOCTYPE html>
@@ -29,15 +23,28 @@ if (!$userData) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔧 การตั้งค่าบัญชีผู้ใช้</title>
-    <link href="https://fonts.googleapis.com/css2?family=TH+Sarabun+New:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/settings.css">
     <link rel="stylesheet" href="./css/globals.css">
     <link rel="stylesheet" href="./css/navbars.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
+  	<!-- Navbar -->
     <nav class="navbar">
-        <div class="navbar-title"><a href="dashboard.php">🔙 กลับสู่แดชบอร์ด</a></div>
+        <div class="navbar-title"><a href="dashboard.php">📋 ระบบบันทึกปฏิบัติงาน</a></div>
+
+        <div class="navbar-center">
+            ผู้ใช้: <?php echo htmlspecialchars($username); ?>
+        </div>
+
+        <ul>
+            <?php if ($user_role === 'admin'): ?>
+                <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>
+			    <li><a href="view.php">📊 รายงาน</a></li>
+            <?php endif; ?>
+            <li><a href="settings.php">⚙️ การตั้งค่าผู้ใช้</a></li>
+            <li><a href="logout.php">🚪 ออกจากระบบ</a></li>
+        </ul>
     </nav>
 
     <div class="settings-container">
@@ -67,7 +74,7 @@ if (!$userData) {
                 <div>
                     <label>🏢 แผนก</label>
                     <input type="text" value="<?php echo htmlspecialchars($userData['department'] ?? 'ยังไม่ได้ระบุ'); ?>" disabled>
-                </div>
+                </div> 
                 <div>
                     <label>⚖️ บทบาท</label>
                     <input type="text" value="<?php echo htmlspecialchars($userData['role']); ?>" disabled>

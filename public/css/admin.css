@@ -1,59 +1,72 @@
-/* Import TH Sarabun font */
-@import url('https://fonts.googleapis.com/css2?family=TH+Sarabun+New:wght@400;600&display=swap');
-
 /* General Styles */
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+/* Styling for Title Heading */
+.heading-title {
+    color: white;
+    background-color: green;
+    padding: 10px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Styling for Priority Heading */
+.heading-priority {
+    color: white;
+    background-color: #2d88a5;
+    padding: 10px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Styling for Status Heading */
+.heading-status {
+    color: white;
+    background-color: blue;
+    padding: 10px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 20px;
-    font-family: 'TH Sarabun New', sans-serif;
-    font-size: 2rem; /* Reduced font size */
-    letter-spacing: 1px;
+    margin: 20px 0;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
 }
 
+#user-management h2,
+#tag-management h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#tag-management h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: white;
+}
+
+/* User Management Section */
 #user-management {
     margin: 20px auto;
     width: 90%;
-    max-width: 1000px;
+    max-width: 1200px;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     border: none;
-    font-family: 'TH Sarabun New', sans-serif;
-}
-
-/* Column Width Settings */
-.user-code {
-    width: 10%;
-}
-
-.user-name {
-    width: 12%;
-}
-
-.user-action {
-    width: 10%;
-}
-
-th:nth-child(3) {
-    width: 20%;
-}
-
-th:nth-child(4) {
-    width: 15%;
-}
-
-th:nth-child(5), th:nth-child(7) {
-    width: 10%;
-}
-
-.user-address {
-    width: 5%;
-}
-
-th:nth-child(8) {
-    width: 10%;
 }
 
 /* Table Styles */
@@ -61,19 +74,18 @@ table {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    margin: 30px 0;
-    border-radius: 12px;
+    margin: 20px 0;
+    border-radius: 8px;
     overflow: hidden;
     background: #f8f9fa;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    font-family: 'TH Sarabun New', sans-serif;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
 th, td {
-    padding: 15px 20px; /* Reduced padding */
+    padding: 12px 16px;
     text-align: left;
-    border-bottom: 2px solid #e0e0e0;
-    font-size: 1.25rem; /* Reduced font size */
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.95rem;
     color: #333;
 }
 
@@ -82,178 +94,395 @@ th {
     color: #fff;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 tr:hover {
     background-color: #f1f5ff;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
 td {
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     word-wrap: break-word;
 }
 
-/* Last column action button */
 td:last-child {
     text-align: center;
 }
 
-/* Button Styles */
-button {
-    background-color: #e74c3c;
-    color: #fff;
+/* Action Button Base Styles */
+button.btn-delete,
+button.btn-edit,
+button.btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
     border: none;
-    padding: 8px 15px; /* Reduced padding */
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-family: 'TH Sarabun New', sans-serif;
-    font-size: 1.25rem; /* Reduced font size */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.9rem;
+    min-width: 80px;
+    height: 40px;
 }
 
-button:hover {
+/* Delete Button Styles */
+button.btn-delete {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+button.btn-delete:hover {
     background-color: #c0392b;
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
-/* Role dropdown styling */
+/* Edit Button Styles */
+button.btn-edit {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+button.btn-edit:hover {
+    background-color: #27ae60;
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+/* Save Button Styles */
+button.btn-save {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+button.btn-save:hover {
+    background-color: #27ae60;
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+/* Role Dropdown Styling */
 .role-select {
-    width: 120%;
-    padding: 8px; /* Reduced padding */
+    width: 100%;
+    padding: 10px;
     border: 1px solid #cccccc;
-    border-radius: 6px;
+    border-radius: 5px;
     background-color: #fff;
     color: #333;
-    font-size: 1.25rem; /* Reduced font size */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    font-family: 'TH Sarabun New', sans-serif;
 }
 
 .role-select:focus {
     outline: none;
     border-color: #007BFF;
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-    
-    th {
-        display: none;
-    }
-    
-    tr {
-        margin-bottom: 15px;
-        border: 1px solid #dddddd;
-    }
-    
-    td {
-        text-align: right;
-        position: relative;
-        padding-left: 50%;
-    }
-    
-    td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 50%;
-        padding-left: 10px;
-        text-align: left;
-        font-weight: bold;
-        color: #333;
-    }
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
 }
 
 /* Tag Management Section */
 #tag-management {
     margin: 20px auto;
     width: 90%;
-    max-width: 1000px;
+    max-width: 1200px;
     padding: 20px;
     background-color: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    font-family: 'TH Sarabun New', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
-#tag-management h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-#tag-management ul {
-    list-style-type: none;
-    padding: 0;
+/* Title Management - Two Columns */
+#title-management {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
-#tag-management li {
-    font-size: 22px;
+#title-management h3 {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tag-column {
+    width: 48%;
+    box-sizing: border-box;
+}
+
+/* Tag List Items */
+#title-management ul,
+#priority-list,
+#status-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#title-management li,
+#priority-list li,
+#status-list li {
+    font-size: 0.85rem;
     background-color: #fff;
     margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 6px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 10px 14px;
+    border-radius: 5px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
-#tag-management input {
-    width: calc(100% - 130px);
-    padding: 9px; /* Reduced padding */
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px; /* Reduced font size */
+#title-management li span,
+#priority-list li span,
+#status-list li span {
+    flex: 1;
     margin-right: 10px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    word-wrap: break-word;
 }
 
-/* Ensure buttons are aligned to the right */
+/* Button Group Styling */
 .button-group {
     display: flex;
-    gap: 10px; /* Space between buttons */
-    justify-content: flex-end; /* Align buttons to the right */
-    margin-left: auto; /* Push buttons to the far right of the list item */
+    gap: 10px;
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
-/* Style for each button in the list */
-#tag-management li button {
-    background-color: #f9f9f9;
+/* Input Group Styling */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#tag-management .input-group input[type="text"] {
+    flex: 1;
+    height: 50px;
+    padding: 12px 16px;
+    font-size: 1rem;
     border: 1px solid #ccc;
-    padding: 5px 10px;
     border-radius: 5px;
-    font-size: 1.25rem; /* Reduced font size */
-    color: #333;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#tag-management .input-group button {
+    height: 50px;
+    padding: 0 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 120px;
 }
 
-#tag-management li button:hover {
-    background-color: #e0e0e0;
+#tag-management .input-group button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+/* Add Tag Buttons */
 #tag-management button {
     background-color: #007BFF;
     color: #fff;
     border: none;
     margin-top: 10px;
-    padding: 8px 15px; /* Reduced padding */
-    border-radius: 6px;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-size: 22px; /* Reduced font size */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #tag-management button:hover {
     background-color: #0056b3;
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Responsive Design Enhancements */
+
+/* Tablets and Small Desktops */
+@media (max-width: 1024px) {
+    /* Reduce padding and font sizes slightly */
+    #user-management {
+        width: 95%;
+        padding: 18px;
+    }
+
+    #user-management h2,
+    #tag-management h2 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    #tag-management h3 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    th, td {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    button.btn-delete,
+    button.btn-edit,
+    button.btn-save {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        min-width: 70px;
+        height: 38px;
+    }
+
+    .role-select {
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+}
+
+/* Tablets and Mobile Devices */
+@media (max-width: 768px) {
+    /* Stack Tag Columns Vertically */
+    #title-management {
+        flex-direction: column;
+    }
+
+    .tag-column {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    /* Stack input and button vertically */
+    .input-group {
+        flex-direction: column;
+    }
+
+    #tag-management .input-group button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    #tag-management .input-group input[type="text"] {
+        width: 100%;
+    }
+
+    /* Adjust font sizes */
+    #user-management h2,
+    #tag-management h2 {
+        font-size: 1rem;
+    }
+
+    #tag-management h3 {
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    button.btn-delete,
+    button.btn-edit,
+    button.btn-save {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        min-width: 60px;
+        height: 35px;
+    }
+
+    .role-select {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+}
+
+/* Mobile Phones */
+@media (max-width: 600px) {
+    /* Convert tables to block elements */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    th {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #dddddd;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    td {
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+        font-size: 0.8rem;
+        border-bottom: none;
+    }
+
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        text-align: left;
+        font-weight: bold;
+        color: #333;
+        font-size: 0.8rem;
+    }
+
+    /* Stack input and button vertically */
+    .input-group {
+        flex-direction: column;
+    }
+
+    #tag-management .input-group button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    #tag-management .input-group input[type="text"] {
+        width: 100%;
+    }
+
+    /* Adjust tag list items */
+    #tag-management li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #tag-management li span {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .button-group {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    button.btn-delete,
+    button.btn-edit,
+    button.btn-save {
+        width: 48%;
+        margin-bottom: 5px;
+    }
+
+    /* Adjust Add Tag Buttons */
+    #tag-management button {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 0.9rem;
+    }
 }

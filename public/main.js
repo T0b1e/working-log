@@ -1,11 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize page on load
     window.onload = function() {
-        fetchUserData(); // Load initial data
-        fetchOptions(); // Populate dropdowns
-        document.getElementById('editModal').style.display = 'none';
-        document.getElementById('detailModal').style.display = 'none';
+        checkAndUpdateStatuses(); // Check and update overdue statuses
     };
+
+    // Function to check and update statuses
+    function checkAndUpdateStatuses() {
+        fetch('utils/update_status.php') // Endpoint that updates overdue statuses
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.message); // Log number of records updated
+                } else {
+                    console.error('Status update error:', data.message);
+                }
+                // After updating statuses, fetch user data
+                fetchUserData(); 
+                fetchOptions(); // Populate dropdowns
+                document.getElementById('editModal').style.display = 'none';
+                document.getElementById('detailModal').style.display = 'none';
+            })
+            .catch(error => console.error('Error checking and updating status:', error));
+    }
 
     // Handle form submission for editing
     const editForm = document.getElementById('editForm');
@@ -50,14 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     populateDropdown('title', data.titles);
                     populateDropdown('editPriority', data.priorities);
                     populateDropdown('editStatus', data.statuses);
-                    populateDropdown('editTitle', data.titles); // Populate editTitle dropdown here
+                    populateDropdown('editTitle', data.titles);
                 } else {
                     console.error('Failed to fetch options', data.error);
                 }
             })
             .catch(error => console.error('Error fetching options:', error));
     }
-	
+    
     // Populate dropdown options
     function populateDropdown(dropdownId, options) {
         const dropdown = document.getElementById(dropdownId);
@@ -75,14 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.appendChild(optionElement);
         });
     }
-	
+    
 
     // Handle file upload form submission
     const uploadForm = document.getElementById('uploadForm');
-	const fileInput = document.getElementById('fileToUpload');
-	const errorMessage = document.getElementById('error-message');
+    const fileInput = document.getElementById('fileToUpload');
+    const errorMessage = document.getElementById('error-message');
     const clearUploadButton = document.getElementById('clearUploadButton');
-	const uploadProgress = document.getElementById('uploadProgress');
+    const uploadProgress = document.getElementById('uploadProgress');
 
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(event) {
@@ -97,8 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             }
-			
-			// Show progress bar
+            
+            // Show progress bar
             uploadProgress.style.display = 'block';
             uploadProgress.value = 0;
 
@@ -107,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('fileToUpload', fileInput.files[0]);
             }
 
-          // Create XMLHttpRequest to track upload progress
+            // Create XMLHttpRequest to track upload progress
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'utils/upload_handler.php', true);
 
@@ -144,13 +160,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Send the request
             xhr.send(formData);
         });
-		
-		const clearUploadButton = document.getElementById('clearUploadButton');
+        
         clearUploadButton.addEventListener('click', function() {
             fileInput.value = '';  // Clear the file input
             errorMessage.innerText = '';  // Clear any error messages
         });
-		
     }
 
     // Fetch user data with optional pagination and search parameters
@@ -165,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         userTableBody.innerHTML = '';  // Clear existing rows
         const loadingMessage = document.createElement('tr');
-        loadingMessage.innerHTML = `<td colspan="11" style="text-align:center;">กำลังโหลด...</td>`;
+        loadingMessage.innerHTML = `<td colspan="13" style="text-align:center;">กำลังโหลด...</td>`; // Updated colspan
         userTableBody.appendChild(loadingMessage);
 
         fetch(`utils/fetch_users.php?criteria=${searchCriteria}&term=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`)
@@ -184,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 userTableBody.innerHTML = '';
                 const errorRow = document.createElement('tr');
-                errorRow.innerHTML = `<td colspan="11" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
+                errorRow.innerHTML = `<td colspan="13" style="text-align:center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`; // Updated colspan
                 userTableBody.appendChild(errorRow);
                 recordCountLabel.textContent = 'จำนวนบันทึกทั้งสิ้น: 0';
             });
@@ -200,27 +214,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Create a table row for each user record
-    function createUserRow(user, index) {
-        const row = document.createElement('tr');
-        const uploadDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'ไม่พบเจอ';
-        const uploadTime = user.created_at ? new Date(user.created_at).toLocaleTimeString() : 'ไม่พบเจอ';
+	function createUserRow(user, index) {
+		const row = document.createElement('tr');
+		const uploadDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'ไม่พบเจอ';
+		const uploadTime = user.created_at ? new Date(user.created_at).toLocaleTimeString() : 'ไม่พบเจอ';
+		const startDate = user.start_date ? new Date(user.start_date).toLocaleDateString() : 'ไม่พบเจอ';
+		const endDate = user.end_date ? new Date(user.end_date).toLocaleDateString() : 'ไม่พบเจอ';
 
-        row.innerHTML = `
-            <td>${index}</td>
-            <td>${uploadDate}</td>
-            <td>${uploadTime}</td>
-            <td>${user.username}</td>
-            <td>${user.title || 'ไม่พบเจอ'}</td>
-            <td>${user.description || 'ไม่พบเจอ'}</td>
-            <td>${user.status || 'ไม่พบเจอ'}</td>
-            <td>${user.file_name || ''}</td>
-            <td><button class="detail-btn" data-id="${user.message_id}"><i class="fas fa-info-circle"></i></button></td> 
-            <td><button class="edit-btn" data-id="${user.message_id}"><i class="fas fa-edit"></i></button></td>
-            <td><button class="delete-btn" data-id="${user.message_id}"><i class="fas fa-trash-alt"></i></button></td>
-        `;
-        return row;
-    }
+		// Determine status class based on status text
+		let statusClass = '';
+		if (user.status === 'เลยกำหนด') {
+			statusClass = 'status-overdue';
+		} else if (user.status === 'กำลังดำเนินการ') {
+			statusClass = 'status-in-progress';
+		} else if (user.status === 'ดำเนินการแล้วเสร็จ') {
+			statusClass = 'status-completed';
+		}
+
+		row.innerHTML = `
+			<td>${index}</td>
+			<td>${uploadTime}</td>
+			<td>${startDate}</td>
+			<td>${endDate}</td>
+			<td>${user.username}</td>
+			<td>${user.title || 'ไม่พบเจอ'}</td>
+			<td>${user.description || 'ไม่พบเจอ'}</td>
+			<td class="${statusClass}">${user.status || 'ไม่พบเจอ'}</td>
+			<td>${user.file_name || ''}</td>
+			<td class="action-column"><button class="detail-btn" data-id="${user.message_id}"><i class="fas fa-info-circle"></i></button></td> 
+			<td class="action-column"><button class="edit-btn" data-id="${user.message_id}"><i class="fas fa-edit"></i></button></td>
+			<td class="action-column"><button class="delete-btn" data-id="${user.message_id}"><i class="fas fa-trash-alt"></i></button></td>
+		`;
+		return row;
+	}
 
     // Handle clicks for dynamic elements in the user table
     document.querySelector('#userTable').addEventListener('click', function (event) {
@@ -257,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Populate Edit Modal with fetched message data
-// Populate Edit Modal with fetched message data and set selected values
     function populateEditModal(message) {
         // Set dropdown values based on message data
         const editTitle = document.getElementById('editTitle');
@@ -272,6 +297,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editDescription').value = message.description || '';
         document.getElementById('editMessageId').value = message.message_id || '';
 
+        // New date fields
+        document.getElementById('editStartDate').value = message.start_date || '';
+        document.getElementById('editEndDate').value = message.end_date || '';
+
         // Show current file information if available
         const currentFileSection = document.getElementById('currentFileSection');
         if (message.file_name) {
@@ -284,24 +313,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editModal').style.display = 'block'; // Display modal
     }
 
-    // Display the message details in a modal
-    function displayDetailsModal(message) {
-        const modalDetails = document.getElementById('modalDetails');
-        const fileLink = message.file_name 
-            ? `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` 
-            : 'ไม่มีไฟล์';
+	function displayDetailsModal(message) {
+		const modalDetails = document.getElementById('modalDetails');
+		const fileLink = message.file_name 
+			? `<a href="../uploads/${message.file_name}" target="_blank">${message.file_name}</a>` 
+			: 'ไม่มีไฟล์';
+		const startDate = message.start_date ? new Date(message.start_date).toLocaleDateString() : 'ไม่พบเจอ';
+		const endDate = message.end_date ? new Date(message.end_date).toLocaleDateString() : 'ไม่พบเจอ';
 
-        modalDetails.innerHTML = `
-            <p><strong>หัวข้อ:</strong> ${message.title}</p>
-            <p><strong>รายละเอียด:</strong> ${message.description}</p>
-            <p><strong>สถานะ:</strong> ${message.status}</p>
-            <p><strong>แผนก:</strong> ${message.department || 'ไม่พบเจอ'}</p>
-            <p><strong>ลำดับความสำคัญ:</strong> ${message.priority || 'ไม่พบเจอ'}</p>
-            <p><strong>ความคิดเห็น:</strong> ${message.comments || 'ไม่มีความคิดเห็นเพิ่มเติม'}</p>
-            <p><strong>ไฟล์แนบ:</strong> ${fileLink}</p>
-        `;
-        document.getElementById('detailModal').style.display = 'block';
-    }
+		// Calculate overdue days if status is 'เลยกำหนด'
+		let overdueText = '';
+		if (message.status === 'เลยกำหนด' && message.end_date) {
+			const endDateObj = new Date(message.end_date);
+			const today = new Date();
+
+			if (endDateObj < today) {
+				const daysOverdue = Math.ceil((today - endDateObj) / (1000 * 60 * 60 * 24));
+            	overdueText = `<p style="color: red;"><strong>ล้าช้า:</strong> ${daysOverdue} วัน</p>`;
+			}
+		}
+
+		modalDetails.innerHTML = `
+			<p><strong>หัวข้อ:</strong> ${message.title}</p>
+			<p><strong>รายละเอียด:</strong> ${message.description}</p>
+			<p><strong>วันที่จัดทำ:</strong> ${startDate}</p>
+			<p><strong>วันที่สิ้นสุด:</strong> ${endDate}</p>
+			<p><strong>สถานะ:</strong> ${message.status}</p>
+			<p><strong>ลำดับความสำคัญ:</strong> ${message.priority || 'ไม่พบเจอ'}</p>
+			<p><strong>ความคิดเห็น:</strong> ${message.comments || 'ไม่มีความคิดเห็นเพิ่มเติม'}</p>
+			<p><strong>ไฟล์แนบ:</strong> ${fileLink}</p>
+			${overdueText} <!-- Display overdue information if applicable -->
+		`;
+		document.getElementById('detailModal').style.display = 'block';
+	}
 
     // Handle delete action for a message
     function handleDelete(messageId) {

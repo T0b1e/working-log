@@ -1,3 +1,7 @@
+body {
+	margin: 0;
+}
+
 .settings-container {
     max-width: 600px;
     margin: 30px auto;

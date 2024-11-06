@@ -1,5 +1,7 @@
-/* General Styles */
-body {
+/* =========================
+   General Styles
+   ========================= */
+   body {
     font-family: 'Sarabun', sans-serif;
     margin: 0;
     padding: 0;
@@ -7,14 +9,13 @@ body {
     background-color: #eafaf1;
 }
 
-/* Layout */
+/* Container Adjustments */
 .split-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 10px;
+    margin: 0;
     gap: 20px;
 }
 
@@ -25,13 +26,48 @@ body {
     }
 }
 
+/* Adjust the left-side */
+.left-side {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+@media (min-width: 768px) {
+    .left-side {
+        width: 100%;
+        overflow-x: hidden;
+    }
+}
+
+/* Adjust the right-side */
+.right-side {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+    .right-side {
+        width: 35%;
+        margin-top: 0;
+    }
+}
+
 /* Record Count Label */
 .record-count-container {
     margin-bottom: 15px;
 }
 
 .record-count-label {
-    font-size: 14px;
+    font-size: 15px; /* Increased from 14px */
     color: #555;
     background-color: #f0f0f0;
     padding: 5px 10px;
@@ -47,130 +83,173 @@ body {
 #recordCountSelect {
     width: 150px;
     padding: 5px;
-}
-
-/* Left Side */
-.left-side {
-    width: 100%;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow-y: auto;
-}
-
-@media (min-width: 768px) {
-    .left-side {
-        width: 85%; /* Increased width of left-side */
-    }
-}
-
-
-/* Right Side */
-.right-side {
-    width: 100%;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-@media (min-width: 768px) {
-    .right-side {
-        width: 35%; /* Reduced width of right-side */
-    }
+    font-size: 17px; /* Increased from 16px */
 }
 
 /* Search Filter */
 .search-filter-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
-    align-items: center;
     margin-bottom: 20px;
 }
 
-.search-filter-container label {
-    font-size: 16px;
-    color: #333;
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.search-filter-container select, 
-.search-filter-container input {
+.search-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-group label {
+    font-size: 17px; /* Increased from 16px */
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.search-group select,
+.search-group input[type="text"] {
     padding: 10px;
     border: 1px solid #cccccc;
     border-radius: 5px;
-    font-size: 16px;
-    flex: 1;
+    font-size: 17px; /* Increased from 16px */
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.search-filter-container button {
+/* Compact styling for specific search buttons */
+#clearSearchButton,
+#searchButton {
+    padding: 5px 8px; /* Increased padding */
+    font-size: 14px; /* Increased from 12px */
+    min-width: 60px;
+    width: auto;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
     background-color: #4caf50;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.search-filter-container button:hover {
+#clearSearchButton:hover,
+#searchButton:hover {
     background-color: #388e3c;
 }
 
+/* Mobile-specific adjustments */
+@media (max-width: 600px) {
+    .search-row {
+        flex-direction: column;
+    }
+
+    #clearSearchButton,
+    #searchButton {
+        padding: 4px 6px;
+        font-size: 13px; /* Adjusted for mobile readability */
+        min-width: 50px;
+    }
+}
+
 /* Table Styles */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    table-layout: fixed;
 }
 
-th, td {
-    padding: 12px 15px;
+table th, table td {
+    padding: 8px 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #4caf50;
-    color: #fff;
-    font-size: 16px;
-    white-space: nowrap; /* Allow text to wrap */
-}
-
-td {
-    font-size: 14px;
-    color: #333;
-}
-
-/* Title Column */
-th.title-column,
-td.title-column {
-    width: 100px;
-    max-width: 100px;
-    white-space: nowrap; /* Allow text to wrap */
-    overflow: visible;
-    text-overflow: clip;
     word-wrap: break-word;
 }
 
-td.description-column, td.username-column {
-    width: 100px;
-    max-width: 100px;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Document Column */
-th.document-column,
-td.document-column {
-    width: 120px;
-    max-width: 120px;
+table th {
     white-space: nowrap;
-    overflow: visible;
-    text-overflow: clip;
-    word-wrap: break-word;
+    font-size: 15px; /* Increased from 14px */
+}
+
+table td {
+    white-space: normal;
+    font-size: 13px; /* Increased from 12px */
+}
+
+/* Specify column widths for 13 columns */
+table th:nth-child(1),
+table td:nth-child(1) {
+    width: 3%;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) {
+    width: 8%;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+    width: 6%;
+}
+
+table th:nth-child(4),
+table td:nth-child(4) {
+    width: 10%;
+}
+
+table th:nth-child(5),
+table td:nth-child(5) {
+    width: 12%;
+}
+
+table th:nth-child(6),
+table td:nth-child(6) {
+    width: 15%;
+}
+
+table th:nth-child(7),
+table td:nth-child(7) {
+    width: 8%;
+}
+
+table th:nth-child(8),
+table td:nth-child(8) {
+    width: 8%;
+}
+
+table th:nth-child(9),
+table td:nth-child(9) {
+    width: 8%;
+}
+
+table th:nth-child(10),
+table td:nth-child(10) {
+    width: 8%;
+}
+
+/* Adjusted widths for action columns */
+table th:nth-child(11),
+table td:nth-child(11),
+table th:nth-child(12),
+table td:nth-child(12),
+table th:nth-child(13),
+table td:nth-child(13) {
+    width: 6%;
+    min-width: 60px;
 }
 
 /* Form Container */
@@ -180,27 +259,42 @@ td.document-column {
 
 h2 {
     text-align: center;
-    font-size: 24px;
+    font-size: 26px; /* Increased from 24px */
     margin-bottom: 20px;
     color: #2c3e50;
 }
 
 label {
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 17px; /* Increased from 16px */
+	margin-top: 5px;
+    margin-bottom: 5px;
     color: #555;
 }
 
 input[type="text"],
+input[type="date"], /* Added styling for date inputs */
 input[type="file"],
-textarea
- {
+textarea,
+select {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 17px; /* Increased from 16px */
+    box-sizing: border-box;
+}
+
+/* Styles for the date fields container */
+.date-fields {
+    display: flex;
+    gap: 30px; /* Adjust spacing between date fields */
+    margin-bottom: 20px; /* Space between date fields and priority field */
+}
+
+.date-fields .form-group {
+    flex: 1;
+    margin-bottom: 0; /* Remove bottom margin from date fields */
 }
 
 /* Button Styles */
@@ -209,7 +303,7 @@ button {
     padding: 12px;
     background-color: #4caf50;
     color: white;
-    font-size: 16px;
+    font-size: 17px; /* Increased from 16px */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -223,37 +317,56 @@ button:hover {
 /* Style for the progress bar */
 .styled-progress {
     width: 100%;
-    height: 20px;                /* Set height for visibility */
-    border-radius: 10px;         /* Rounded corners */
+    height: 20px;
+    border-radius: 10px;
     overflow: hidden;
-    -webkit-appearance: none;    /* Remove default styling */
+    -webkit-appearance: none;
     appearance: none;
 }
 
 /* Webkit-based browsers styling */
 .styled-progress::-webkit-progress-bar {
-    background-color: #f3f3f3;   /* Light grey background */
+    background-color: #f3f3f3;
     border-radius: 10px;
 }
 
 .styled-progress::-webkit-progress-value {
-    background: linear-gradient(to right, #4caf50, #76c7c0); /* Green gradient */
-    border-radius: 10px;        /* Rounded corners */
-    transition: width 0.2s ease; /* Smooth transition */
-}
-
-/* Firefox styling */
-.styled-progress::-moz-progress-bar {
-    background: linear-gradient(to right, #4caf50, #76c7c0); /* Green gradient */
+    background: linear-gradient(to right, #4caf50, #76c7c0);
     border-radius: 10px;
     transition: width 0.2s ease;
 }
 
+/* Firefox styling */
+.styled-progress::-moz-progress-bar {
+    background: linear-gradient(to right, #4caf50, #76c7c0);
+    border-radius: 10px;
+    transition: width 0.2s ease;
+}
+
+/* Action Buttons */
+th.action-column,
+td.action-column {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+}
+
 .detail-btn, .edit-btn, .delete-btn {
-    padding: 8px 12px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
     border-radius: 5px;
     cursor: pointer;
+    border: none;
     transition: background-color 0.3s, color 0.3s;
+}
+
+.detail-btn i, .edit-btn i, .delete-btn i {
+    font-size: 17px; /* Increased from 16px */
 }
 
 .detail-btn {
@@ -289,51 +402,60 @@ button:hover {
     color: white;
 }
 
-/* Modal Styles */
+/* =========================
+   Modal Styles Enhancement
+   ========================= */
+
+/* Modal Overlay */
 .modal {
-    display: none;
+    display: none; /* Hidden by default */
     position: fixed;
-    z-index: 1;
+    z-index: 1000; /* Ensure it's above other elements */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    
+    /* Flexbox for centering */
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    /* Ensure scroll if content is too large */
+    overflow: auto;
 }
 
-select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    max-height: 300px; /* Set a maximum height for dropdowns */
-    overflow-y: auto;  /* Enable scrolling within dropdown if overflow */
-}
-
+/* Modal Content */
 .modal-content {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 600px;
+    padding: 10px; /* Reduced from 20px */
+    border-radius: 8px; /* Reduced from 10px */
+    width: 90%; /* Reduced from 80% */
+    max-width: 500px; /* Reduced from 600px */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     position: relative;
-    top: 50%;
+    top: 50%; /* Changed from 60% to center vertically */
     left: 50%;
     transform: translate(-50%, -50%);
-    border: 2px solid #4caf50;
+    border: 1px solid #4caf50; /* Reduced border thickness from 2px to 1px */
+    
+    animation: fadeIn 0.2s ease-out; /* Faster fade-in */
+    font-size: 14px; /* Reduced from 16px */
 }
 
+/* Modal Heading */
+.modal-content h2 {
+    font-size: 18px; /* Reduced from 26px */
+    margin-bottom: 10px; /* Reduced from 20px */
+}
+
+/* Close Button */
 .close-btn {
     position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
+    top: 5px; /* Reduced from 10px */
+    right: 10px; /* Reduced from 15px */
+    font-size: 20px; /* Reduced from 25px */
     cursor: pointer;
     color: #d32f2f;
     transition: color 0.3s ease;
@@ -343,72 +465,319 @@ select {
     color: #b71c1c;
 }
 
-#modalDetails {
-    text-align: left;
-    margin-bottom: 20px;
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-#modalDetails p {
-    font-size: 16px;
-    color: #333;
-    margin: 10px 0;
+/* Responsive Adjustments for Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+        padding: 8px; /* Further reduced padding */
+        font-size: 13px; /* Further reduced font size */
+    }
+
+    /* Modal Heading */
+    .modal-content h2 {
+        font-size: 16px; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
+    }
+
+    /* Labels */
+    .modal-content label {
+        font-size: 13px; /* Further reduced */
+        margin-bottom: 3px; /* Further reduced */
+    }
+
+    /* Input Fields and Selects */
+    .modal-content input[type="text"],
+    .modal-content input[type="date"],
+    .modal-content input[type="file"],
+    .modal-content textarea,
+    .modal-content select {
+        padding: 6px; /* Further reduced */
+        font-size: 13px; /* Further reduced */
+        margin-bottom: 10px; /* Further reduced */
+    }
+
+    /* Date Fields Container */
+    .modal-content .date-fields {
+        gap: 10px; /* Further reduced */
+        margin-bottom: 10px; /* Further reduced */
+    }
+
+    /* Buttons within Modal */
+    .modal-content button {
+        padding: 8px; /* Further reduced */
+        font-size: 13px; /* Further reduced */
+    }
+
+    /* Delete File Button */
+    .modal-content #deleteFileBtn {
+        padding: 5px 8px; /* Further reduced */
+        font-size: 13px; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
+    }
 }
 
-#detailUrl {
-    display: inline-block;
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+@media (max-width: 600px) {
+    /* Further adjustments for mobile phones */
+    .modal-content {
+        width: 95%;
+        max-height: 80vh;
+        padding: 6px; /* Further reduced */
+        font-size: 12px; /* Further reduced */
+    }
+
+    /* Modal Heading */
+    .modal-content h2 {
+        font-size: 14px; /* Further reduced */
+        margin-bottom: 6px; /* Further reduced */
+    }
+
+    /* Labels */
+    .modal-content label {
+        font-size: 12px; /* Further reduced */
+        margin-bottom: 2px; /* Further reduced */
+    }
+
+    /* Input Fields and Selects */
+    .modal-content input[type="text"],
+    .modal-content input[type="date"],
+    .modal-content input[type="file"],
+    .modal-content textarea,
+    .modal-content select {
+        padding: 5px; /* Further reduced */
+        font-size: 12px; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
+    }
+
+    /* Date Fields Container */
+    .modal-content .date-fields {
+        gap: 8px; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
+    }
+
+    /* Buttons within Modal */
+    .modal-content button {
+        padding: 6px; /* Further reduced */
+        font-size: 12px; /* Further reduced */
+    }
+
+    /* Delete File Button */
+    .modal-content #deleteFileBtn {
+        padding: 4px 6px; /* Further reduced */
+        font-size: 12px; /* Further reduced */
+        margin-bottom: 6px; /* Further reduced */
+    }
 }
 
-#detailUrl:hover {
-    background-color: #388e3c;
+/* Select Dropdown within Modal */
+.modal select {
+    font-size: 14px; /* New: Reduced from 17px */
 }
 
+/* Current File Section in Edit Modal */
 .currentFileSelectionLabel {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 15px; /* Reduced from 20px */
+    margin-bottom: 15px; /* Reduced from 20px */
 }
 
 label[for="newFileUpload"],
 #newFileUpload {
-    margin-top: 20px;
+    margin-top: 15px; /* Reduced from 20px */
 }
 
-/* Responsive Modal */
+/* Additional Responsive Adjustments */
+
+/* Responsive adjustments for mobile devices */
 @media (max-width: 768px) {
+    .split-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .left-side,
+    .right-side {
+        padding: 10px;
+    }
+
+    th, td {
+        padding: 6px 8px;
+        font-size: 13px; /* Increased from 12px */
+    }
+
+    th {
+        font-size: 14px; /* Increased from 12px */
+    }
+
+    h2 {
+        font-size: 22px; /* Increased from 20px */
+    }
+
+    label {
+        font-size: 15px; /* Increased from 14px */
+    }
+
+    input[type="text"],
+    input[type="date"], /* Added styling for date inputs */
+    input[type="file"],
+    textarea,
+    select {
+        padding: 8px;
+        font-size: 15px; /* Increased from 14px */
+    }
+
+    button {
+        padding: 10px;
+        font-size: 15px; /* Increased from 14px */
+    }
+
+    .pagination-button {
+        padding: 8px 12px;
+        font-size: 13px; /* Increased from 12px */
+    }
+
+    .pagination {
+        gap: 5px;
+    }
+
     .modal-content {
-        width: 90%;
+        width: 95%;
+    }
+
+    .record-count-container {
+        margin-bottom: 10px;
+    }
+
+    .record-count-label {
+        font-size: 13px; /* Increased from 12px */
+    }
+
+    /* Adjust action columns for mobile */
+    table th:nth-child(11),
+    table td:nth-child(11),
+    table th:nth-child(12),
+    table td:nth-child(12),
+    table th:nth-child(13),
+    table td:nth-child(13) {
+        width: 8%;
+        min-width: 50px;
+    }
+
+    .detail-btn, .edit-btn, .delete-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .detail-btn i, .edit-btn i, .delete-btn i {
+        font-size: 15px; /* Increased from 14px */
     }
 }
 
-/* Pagination */
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
+/* Responsive adjustments for mobile phones */
+@media (max-width: 600px) {
+    /* Adjust column widths */
+    table th, table td {
+        padding: 5px 6px;
+        font-size: 12px; /* Increased from 11px */
+    }
+
+    table th:nth-child(1),
+    table td:nth-child(1) {
+        width: 4%;
+    }
+
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        width: 10%;
+    }
+
+    table th:nth-child(3),
+    table td:nth-child(3) {
+        width: 8%;
+    }
+
+    table th:nth-child(4),
+    table td:nth-child(4) {
+        width: 12%;
+    }
+
+    table th:nth-child(5),
+    table td:nth-child(5) {
+        width: 15%;
+    }
+
+    table th:nth-child(6),
+    table td:nth-child(6) {
+        width: 18%;
+    }
+
+    table th:nth-child(7),
+    table td:nth-child(7) {
+        width: 10%;
+    }
+
+    table th:nth-child(8),
+    table td:nth-child(8) {
+        width: 10%;
+    }
+
+    table th:nth-child(9),
+    table td:nth-child(9) {
+        width: 10%;
+    }
+
+    table th:nth-child(10),
+    table td:nth-child(10) {
+        width: 10%;
+    }
+
+    /* Adjust action columns */
+    table th:nth-child(11),
+    table td:nth-child(11),
+    table th:nth-child(12),
+    table td:nth-child(12),
+    table th:nth-child(13),
+    table td:nth-child(13) {
+        width: 8%;
+        min-width: 50px;
+    }
+
+    .detail-btn, .edit-btn, .delete-btn {
+        width: 26px;
+        height: 26px;
+    }
+
+    .detail-btn i, .edit-btn i, .delete-btn i {
+        font-size: 13px; /* Increased from 12px */
+    }
 }
 
-.pagination-button {
-    padding: 10px 15px;
-    border: 1px solid #4caf50;
-    background-color: white;
-    color: #4caf50;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+.status-overdue {
+    color: red;
+    font-weight: bold;
 }
 
-.pagination-button.active {
-    background-color: #4caf50;
-    color: white;
+.status-in-progress {
+    color: blue;
+    font-weight: bold;
 }
 
-.pagination-button:hover {
-    background-color: #4caf50;
-    color: white;
+.status-completed {
+    color: green;
+    font-weight: bold;
+}
+
+.no-scroll {
+    overflow: hidden;
 }

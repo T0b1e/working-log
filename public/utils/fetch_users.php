@@ -10,6 +10,19 @@ try {
     // Create a database connection
     $db = (new Database())->connect();
 
+    // Get the current date to check overdue status
+    $currentDate = date('Y-m-d');
+
+    // Update status for overdue projects in progress
+    $updateStatusQuery = "
+        UPDATE messages
+        SET status = 'เลยกำหนด'
+        WHERE status = 'in progress' AND end_date < :currentDate
+    ";
+    $updateStatusStmt = $db->prepare($updateStatusQuery);
+    $updateStatusStmt->bindParam(':currentDate', $currentDate, PDO::PARAM_STR);
+    $updateStatusStmt->execute();
+
     // Get user role and user ID from cookies
     $user_id = isset($_COOKIE['user_id']) ? $_COOKIE['user_id'] : null;
     $user_role = isset($_COOKIE['role']) ? $_COOKIE['role'] : null;
@@ -67,6 +80,8 @@ try {
         messages.description, 
         messages.status, 
         messages.created_at, 
+        messages.start_date,     -- Added start_date
+        messages.end_date,       -- Added end_date
         files.file_name
     FROM users
     INNER JOIN messages ON users.user_id = messages.user_id

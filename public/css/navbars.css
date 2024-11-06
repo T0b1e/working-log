@@ -1,16 +1,23 @@
 /* Navbar styles */
 .navbar {
+	font-family: 'Sarabun', sans-serif;
     width: 100%;
-    background-color: #3498db;
+    background-color: #3498db; /* Reverted to original color */
     padding: 15px;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box; /* Ensure padding doesn't affect the width */
+    box-sizing: border-box;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    position: relative;
 }
 
+.navbar-title a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px; /* Original font size */
+}
 
 .navbar ul {
     list-style: none;
@@ -23,30 +30,63 @@
     margin-right: 20px;
 }
 
+.navbar ul li:last-child {
+    margin-right: 0;
+}
+
 .navbar a {
     color: white;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 16px; /* Original font size */
     transition: color 0.3s ease;
 }
 
 .navbar a:hover {
-    color: #f1c40f;
+    color: #f1c40f; /* Original hover color */
 }
 
-.navbar-title a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
+.navbar-center {
+    flex-grow: 1;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
 }
 
 @media screen and (max-width: 600px) {
-    .navbar ul {
-        display: none;
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .navbar .menu-icon {
+    .navbar-title {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .navbar-center {
+        width: 100%;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar ul li {
+        margin: 0;
+        width: 100%;
+    }
+
+    .navbar ul li a {
         display: block;
-        cursor: pointer;
+        width: 100%;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar ul li a:last-child {
+        border-bottom: none;
     }
 }
