@@ -14,7 +14,7 @@ $user_id = $_COOKIE['user_id'];
 // Fetch username from database using user_id
 $user = new User();
 $userData = $user->readById($user_id);
-$username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default to 'ผู้ใช้งาน' if username not found
+$username = htmlspecialchars($userData['username'] ?? 'ผู้ใช้งาน'); // Sanitize output
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -60,13 +60,13 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
         <div class="navbar-title"><a href="dashboard.php">📋 ระบบบันทึกปฏิบัติงาน</a></div>
 
         <div class="navbar-center">
-            ผู้ใช้: <?php echo htmlspecialchars($username); ?>
+            ผู้ใช้: <?php echo $username; ?>
         </div>
 
         <ul>
             <?php if ($user_role === 'admin'): ?>
-                <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>
-			    <li><a href="view.php">📊 รายงาน</a></li>
+                <li><a href="admin.php">🔧 แผงควบคุมผู้ดูแล</a></li>                
+                <li><a href="view.php">📊 รายงาน</a></li>
             <?php endif; ?>
             <li><a href="settings.php">⚙️ การตั้งค่าผู้ใช้</a></li>
             <li><a href="logout.php">🚪 ออกจากระบบ</a></li>
@@ -87,6 +87,7 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
                         <select id="searchCriteria">
                             <option value="username">ผู้ส่ง</option>
                             <option value="title">หัวข้อ</option>
+							<option value="description">รายละเอียด</option> 
                             <option value="priority">ลำดับความสำคัญ</option>
                             <option value="status">สถานะ</option>
                             <option value="file_name">ชื่อเอกสาร</option>
@@ -110,28 +111,28 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
                 <span id="recordCount" class="record-count-label">📊 จำนวนบันทึกทั้งสิ้น: 0</span>
             </div>
 
-            <!-- Data Table -->
-            <div class="table-container">
-                <table id="userTable">
-                    <thead>
-                        <tr>
-                            <th>#</th> <!-- Index Column -->
-                            <th>เวลา</th>
+			<!-- Data Table -->
+			<div class="table-container">
+				<table id="userTable">
+					<thead>
+						<tr>
+							<th>#</th> <!-- Index Column -->
+							<th>เวลา</th>
 							<th>วันที่จัดทำ</th>
-                            <th>วันที่สิ้นสุด</th>
-                            <th class="username-column">ชื่อผู้ใช้</th>
-                            <th class="title-column">หัวข้อ</th>
-                            <th class="description-column">รายละเอียด</th>
-                            <th>สถานะ</th>
-                            <th class="document-column">เอกสาร</th>
-                            <th class="action-column">ดูข้อมูล</th>
-                            <th class="action-column">แก้ไข</th>
-                            <th class="action-column">ลบ</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+							<th>วันที่สิ้นสุด</th>
+							<th class="username-column">ชื่อผู้ใช้</th>
+							<th class="title-column">หัวข้อ</th>
+							<th class="description-column hide-on-mobile">รายละเอียด</th>
+							<th>สถานะ</th>
+							<th class="document-column hide-on-mobile">เอกสาร</th>
+							<th class="action-column">ดูข้อมูล</th>
+							<th class="action-column">แก้ไข</th>
+							<th class="action-column">ลบ</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
 
             <!-- Record Count Selection -->
             <div class="recordCountSelect-class">
@@ -144,8 +145,11 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
                 </select>
             </div>
 
-            <!-- Pagination -->
-            <div id="pagination-container" class="pagination"></div>
+		<!-- Pagination -->
+		<div id="pagination-container" class="pagination">
+			<!-- Dynamic buttons will be injected here by JavaScript -->
+		</div>
+
         </div>
 
         <!-- Right Side: Upload Form (Hidden for Admin) -->
@@ -154,15 +158,13 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
             <div class="form-container">
                 <h2>📝 แบบบันทึกการปฏิบัติงาน</h2>
                 <form id="uploadForm" enctype="multipart/form-data">
-
-
                     <!-- Title Selection -->
                     <label for="title">📄 หัวข้อ</label>
                     <select id="title" name="title" required>
                         <!-- Dynamic options inserted via JavaScript -->
                     </select>
-					
-					 <!-- Date Fields -->
+                    
+                     <!-- Date Fields -->
                     <div class="date-fields">
                         <div class="form-group">
                             <label for="start_date">📅 วันที่จัดทำ</label>
@@ -225,63 +227,69 @@ $username = $userData['username'] ?? 'ผู้ใช้งาน'; // Default t
     </div>
 
     <!-- Modal for Editing a Message -->
-    <div id="editModal" class="modal" role="dialog" aria-labelledby="editModalTitle" aria-modal="true">
-        <div class="modal-content">
-            <span id="closeModal" class="close-btn" aria-label="Close Modal">&times;</span>
-            <h2 id="editModalTitle">✏️ แก้ไขข้อมูล</h2>
-            <form id="editForm">
-                <!-- Title Selection -->
-                <label for="editTitle">📄 หัวข้อ</label>
-                <select id="editTitle" name="title" required>
-                    <!-- Dynamic options inserted via JavaScript -->
-                </select>
+	<div id="editModal" class="modal" role="dialog" aria-labelledby="editModalTitle" aria-modal="true">
+		<div class="modal-content">
+			<span id="closeModal" class="close-btn" aria-label="Close Modal">&times;</span>
+			<h2 id="editModalTitle">✏️ แก้ไขข้อมูล</h2>
+			<form id="editForm">
 
-                <!-- Description -->
-                <label for="editDescription">📄 รายละเอียด</label>
-                <textarea id="editDescription" name="description" required></textarea>
+				<!-- Hidden Field for Message ID -->
+				<input type="hidden" id="editMessageId" name="message_id">
 
-                <!-- Date Fields -->
-                <div class="date-fields">
-                    <div class="form-group">
-                        <label for="editStartDate">📅 วันที่จัดทำ</label>
-                        <input type="date" id="editStartDate" name="start_date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEndDate">📅 วันที่สิ้นสุด</label>
-                        <input type="date" id="editEndDate" name="end_date" required>
-                    </div>
-                </div>
+				<!-- Title Selection -->
+				<label for="editTitle">📄 หัวข้อ</label>
+				<select id="editTitle" name="title" >
+					<!-- Dynamic options inserted via JavaScript -->
+				</select>
+				
+				<!-- Date Fields -->
+				<div class="date-fields">
+					<div class="form-group">
+						<label for="editStartDate">📅 วันที่จัดทำ</label>
+						<input type="date" id="editStartDate" name="start_date">
+					</div>
+					<div class="form-group">
+						<label for="editEndDate">📅 วันที่สิ้นสุด</label>
+						<input type="date" id="editEndDate" name="end_date">
+					</div>
+				</div>
 
-                <!-- Priority Selection -->
-                <label for="editPriority">⚡ ลำดับความสำคัญ</label>
-                <select id="editPriority" name="priority" required>
-                    <!-- Dynamic options inserted via JavaScript -->
-                </select>
+				<!-- Description -->
+				<label for="editDescription">📄 รายละเอียด</label>
+				<textarea id="editDescription" name="description"></textarea>
 
-                <!-- Status Selection -->
-                <label for="editStatus">⚙️ สถานะ</label>
-                <select id="editStatus" name="status" required>
-                    <!-- Dynamic options inserted via JavaScript -->
-                </select>
+				<!-- Priority Selection -->
+				<label for="editPriority">⚡ ลำดับความสำคัญ</label>
+				<select id="editPriority" name="priority">
+					<!-- Dynamic options inserted via JavaScript -->
+				</select>
 
-                <!-- Hidden Field for Message ID -->
-                <input type="hidden" id="editMessageId" name="message_id">
+				<!-- Status Selection -->
+				<label for="editStatus">⚙️ สถานะ</label>
+				<select id="editStatus" name="status">
+					<!-- Dynamic options inserted via JavaScript -->
+				</select>
+				
+				<!-- Description -->
+				<label for="editBody">💬 ความคิดเห็นเพิ่มเติม</label>
+				<textarea id="editBody" name="body"></textarea>
 
-                <!-- Current File Section -->
-                <div id="currentFileSection">
-                    <div class="currentFileSelectionLabel">
-                        <label>📁 ไฟล์ปัจจุบัน:</label>
-                        <span id="currentFileName"></span>
-                    </div>
-                    <button type="button" id="deleteFileBtn">🗑️ ลบไฟล์</button>
-                    <label for="newFileUpload">📎 อัปโหลดไฟล์ใหม่:</label>
-                    <input type="file" id="newFileUpload" name="fileToUpload">
-                </div>
+				<!-- Current File Section -->
+				<div id="currentFileSection" style="display: none;">
+					<div class="currentFileSelectionLabel">
+						<label>📁 ไฟล์ปัจจุบัน:</label>
+						<span id="currentFileName"></span>
+					</div>
+					<button type="button" id="deleteFileBtn">🗑️ ลบไฟล์</button>
+					<label for="newFileUpload">📎 อัปโหลดไฟล์ใหม่:</label>
+					<input type="file" id="newFileUpload" name="fileToUpload">
+				</div>
 
-                <!-- Submit Button -->
-                <button type="submit">💾 บันทึกการแก้ไข</button>
-            </form>
-        </div>
+				<!-- Submit Button -->
+				<button type="submit">💾 บันทึกการแก้ไข</button>
+			</form>
+		</div>
+
     </div>
 
     <!-- JavaScript File -->

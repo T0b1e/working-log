@@ -34,13 +34,13 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: auto; /* Ensure horizontal overflow is handled */
 }
 
 @media (min-width: 768px) {
     .left-side {
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: hidden; /* Hide horizontal scrollbar on larger screens */
     }
 }
 
@@ -163,14 +163,16 @@
 /* Table Styles */
 .table-container {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    table-layout: fixed;
+    /* table-layout: fixed; */ /* Commented out to allow automatic layout */
+    min-width: 800px; /* Ensure table doesn't shrink too much */
 }
 
 table th, table td {
@@ -190,7 +192,7 @@ table td {
     font-size: 13px; /* Increased from 12px */
 }
 
-/* Specify column widths for 13 columns */
+/* Specify column widths for 12 columns */
 table th:nth-child(1),
 table td:nth-child(1) {
     width: 3%;
@@ -213,7 +215,7 @@ table td:nth-child(4) {
 
 table th:nth-child(5),
 table td:nth-child(5) {
-    width: 12%;
+    width: 9%;
 }
 
 table th:nth-child(6),
@@ -241,15 +243,81 @@ table td:nth-child(10) {
     width: 8%;
 }
 
-/* Adjusted widths for action columns */
 table th:nth-child(11),
 table td:nth-child(11),
 table th:nth-child(12),
-table td:nth-child(12),
-table th:nth-child(13),
-table td:nth-child(13) {
+table td:nth-child(12) {
     width: 6%;
     min-width: 60px;
+}
+
+/* Hide less important columns on smaller screens */
+@media (max-width: 903px) {
+    .hide-on-mobile {
+        display: none;
+    }
+
+    /* Adjust min-width for table if necessary */
+    table {
+        min-width: 600px;
+    }
+}
+
+/* =========================
+   Pagination Container Styles
+   ========================= */
+.pagination {
+    display: flex;
+    justify-content: center; /* Center the pagination buttons horizontally */
+    align-items: center;
+    gap: 5px; /* Space between buttons */
+    margin-top: 20px; /* Space above pagination */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+/* Pagination Buttons */
+.pagination-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #4caf50;
+    border-radius: 4px;
+    background-color: white;
+    color: #4caf50;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    min-width: 40px; /* Ensure buttons have a minimum width */
+    text-align: center;
+}
+
+.pagination-button:hover {
+    background-color: #4caf50;
+    color: white;
+}
+
+.pagination-button.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+.pagination-button.disabled {
+    background-color: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    border-color: #bdbdbd;
+}
+
+/* Responsive Adjustments for Pagination */
+@media (max-width: 600px) {
+    .pagination {
+        gap: 3px;
+        margin-top: 15px;
+    }
+
+    .pagination-button {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 30px;
+    }
 }
 
 /* Form Container */
@@ -266,7 +334,7 @@ h2 {
 
 label {
     font-size: 17px; /* Increased from 16px */
-	margin-top: 5px;
+    margin-top: 5px;
     margin-bottom: 5px;
     color: #555;
 }
@@ -599,7 +667,6 @@ label[for="newFileUpload"],
 
 /* Additional Responsive Adjustments */
 
-/* Responsive adjustments for mobile devices */
 @media (max-width: 768px) {
     .split-container {
         padding: 10px;
@@ -667,9 +734,7 @@ label[for="newFileUpload"],
     table th:nth-child(11),
     table td:nth-child(11),
     table th:nth-child(12),
-    table td:nth-child(12),
-    table th:nth-child(13),
-    table td:nth-child(13) {
+    table td:nth-child(12) {
         width: 8%;
         min-width: 50px;
     }
@@ -746,9 +811,7 @@ label[for="newFileUpload"],
     table th:nth-child(11),
     table td:nth-child(11),
     table th:nth-child(12),
-    table td:nth-child(12),
-    table th:nth-child(13),
-    table td:nth-child(13) {
+    table td:nth-child(12) {
         width: 8%;
         min-width: 50px;
     }
@@ -763,6 +826,7 @@ label[for="newFileUpload"],
     }
 }
 
+/* Status Classes */
 .status-overdue {
     color: red;
     font-weight: bold;

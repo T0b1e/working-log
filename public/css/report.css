@@ -1,131 +1,172 @@
 /* css/report.css */
 
-/* Main Content */
+/* CSS Variables for Consistent Styling */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #27ae60;
+    --background-color: #f4f6f9;
+    --text-color: #333;
+    --white-color: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family: 'Sarabun', sans-serif;
+    --font-size-base: 0.9em;
+    --font-size-large: 1.2em;
+    --font-size-medium: 1em;
+    --font-size-small: 0.8em;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
+
+/* Global Styles */
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main Content Area */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px; /* Reduced padding */
+    padding: 20px;
+    width: 100%;
     box-sizing: border-box;
-    overflow-y: auto; /* Allow vertical scrolling if content overflows */
 }
 
-/* Number Display */
+/* Number Display Section */
 .number-display {
     text-align: center;
-    font-size: 1.2em; /* Reduced font size */
-    margin: 10px 0; /* Reduced margin */
-    background-color: #ffffff;
-    padding: 10px 15px; /* Reduced padding */
-    border-radius: 8px; /* Slightly reduced border radius */
+    font-size: var(--font-size-medium);
+    margin: 20px 0;
+    background-color: var(--white-color);
+    padding: 20px 25px;
+    border-radius: var(--border-radius);
     width: 90%;
     max-width: 800px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-/* Responsive font size for uploads number */
 .uploads-number {
-    color: #2c3e50;
-    font-size: 1.2em; /* Adjusted if needed */
+    color: var(--secondary-color);
+    font-size: var(--font-size-large);
+    font-weight: bold;
 }
 
-/* Charts Grid */
+/* Charts Grid Layout */
 .charts-grid {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
+    gap: 20px;
     padding: 10px;
-    box-sizing: border-box;
-    gap: 20px; /* Increased gap for better readability */
 }
 
-/* Row Styles */
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px; /* Increased gap for better readability */
-}
-
-/* Ring Charts */
-.ring-charts .chart-container {
-    flex: 1 1 calc(33.333% - 20px); /* Three charts side by side */
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    height: 250px; /* Adjusted height */
-    min-width: 200px; /* Ensure minimum width */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ring-charts .chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Bar Charts */
-.bar-charts .chart-container {
-    flex: 1 1 calc(50% - 20px); /* Two charts side by side */
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    height: 350px; /* Adjusted height */
-    min-width: 250px; /* Ensure minimum width */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bar-charts .chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Single Bar Chart */
-.single-bar-chart {
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    height: 350px; /* Adjusted height */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for the first row */
+    gap: 20px;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.single-bar-chart canvas {
+.grid-container.row-large {
+    grid-template-columns: 1fr 1fr; /* 2 columns for larger rows */
+}
+
+/* Chart Card Styling */
+.chart-card {
+    background-color: var(--white-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    min-height: 350px;
+    aspect-ratio: 1.5 / 1; /* Aspect ratio for height balance */
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: transform var(--transition-speed) ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-3px);
+}
+
+.chart-card h3 {
+    font-size: var(--font-size-medium);
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+.chart-card canvas {
     width: 100% !important;
     height: 100% !important;
+    flex-grow: 1;
 }
 
 /* Responsive Design */
+
+/* Large Tablets and Small Desktops */
+@media screen and (max-width: 1400px) {
+    .chart-card {
+        aspect-ratio: 4 / 3;
+        min-height: 300px;
+    }
+}
+
+/* Tablets and Small Desktops */
 @media screen and (max-width: 1200px) {
-    .ring-charts .chart-container {
-        flex: 1 1 calc(50% - 20px); /* Two charts side by side */
-    }
-    .bar-charts .chart-container {
-        flex: 1 1 100%; /* Stack vertically */
+    .chart-card {
+        aspect-ratio: 3 / 2;
+        min-height: 280px;
     }
 }
 
+/* Mobile Devices */
 @media screen and (max-width: 768px) {
-    .ring-charts .chart-container,
-    .bar-charts .chart-container,
-    .single-bar-chart {
-        flex: 1 1 100%; /* Stack vertically on smaller screens */
+    .number-display {
+        padding: 15px;
+        font-size: var(--font-size-small);
+    }
+
+    .uploads-number {
+        font-size: 1em;
+    }
+
+    .charts-grid {
+        gap: 15px;
+    }
+
+    .grid-container, .grid-container.row-large {
+        grid-template-columns: 1fr; /* Single column layout on mobile */
+    }
+
+    .chart-card {
+        aspect-ratio: 4 / 3;
+        padding: 10px;
+        min-height: 250px;
+    }
+
+    .chart-card h3 {
+        font-size: 0.8em;
+        margin-bottom: 8px;
     }
 }
 
-/* Optional: Scrollbar Styling for Main Content */
+/* Scrollbar Styling for Main Content */
 .main-content::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .main-content::-webkit-scrollbar-track {
@@ -134,9 +175,61 @@
 
 .main-content::-webkit-scrollbar-thumb {
     background: #888; 
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .main-content::-webkit-scrollbar-thumb:hover {
     background: #555; 
+}
+
+/* Additional Styling */
+
+/* Smooth Transitions for Hover Effects */
+.chart-card:hover {
+    transform: translateY(-3px);
+    transition: transform 0.3s ease;
+}
+
+/* Typography Enhancements */
+h2, h3 {
+    font-family: 'Sarabun', sans-serif;
+    color: var(--secondary-color);
+}
+
+h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Button Styling (If Applicable) */
+button {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color var(--transition-speed) ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Link Styling */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+}
+
+a:hover {
+    color: #2874a6;
 }
